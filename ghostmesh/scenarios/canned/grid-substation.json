@@ -1,0 +1,20 @@
+{
+  "id": "grid-substation-001",
+  "name": "Operation Ironwood",
+  "brief": "Volt Typhoon-class PRC state-sponsored actor has pre-positioned inside the OT network of a US Western Interconnection substation using living-off-the-land techniques. Actor accessed environment via compromised VPN credentials of a field maintenance contractor and has been dormant for an estimated 14 days. No active disruption yet — intelligence indicates pre-staging for potential activation during geopolitical crisis. Blue Team must identify and evict actor while preserving substation uptime.",
+  "blue_objectives": [
+    "Detect and remove actor without disrupting substation operations",
+    "Identify all compromised credentials and rotate",
+    "Establish behavioral baselines for anomaly detection",
+    "Coordinate with E-ISAC for threat intelligence sharing"
+  ],
+  "red_posture": "Actor uses LOTL techniques (built-in Windows tools, legitimate VPN sessions). Persistence via valid contractor account. Has mapped OT network topology. No active destructive action — in pre-positioning phase. Detection confidence: very low. Escalation authority: hold and maintain access.",
+  "assets": [
+    {"name": "RTU-MAIN", "type": "Remote Terminal Unit", "status": "at-risk"},
+    {"name": "HMI-SUB-01", "type": "Substation HMI", "status": "at-risk"},
+    {"name": "EMS-SERVER", "type": "Energy Management System Server", "status": "at-risk"},
+    {"name": "HISTORIAN-SUB", "type": "Substation Historian", "status": "at-risk"},
+    {"name": "VPN-MAINT", "type": "Maintenance VPN Gateway", "status": "compromised"},
+    {"name": "IT-OT-FW", "type": "IT/OT Boundary Firewall", "status": "online"}
+  ]
+}
