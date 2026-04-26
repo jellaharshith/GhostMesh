@@ -12,7 +12,7 @@ class RetrievalSnippet(BaseModel):
 
 class EventModel(BaseModel):
     event_id: str
-    source: str                          # gdelt | acled | local
+    source: str                          # gdelt | liveuamap | ucdp | gtd | local
     timestamp: str
     location: str
     actors: List[str] = []
@@ -138,7 +138,6 @@ class Scenario(BaseModel):
 class SeedRequest(BaseModel):
     query: str
     use_api: bool = True
-    use_acled: bool = True
     country: Optional[str] = None
 
 

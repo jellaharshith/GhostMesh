@@ -8,7 +8,7 @@ from typing import List
 @dataclass
 class Event:
     event_id: str
-    source: str                          # gdelt | acled | local
+    source: str                          # gdelt | liveuamap | ucdp | gtd | local
     timestamp: str                       # ISO-8601 UTC
     location: str
     actors: List[str]

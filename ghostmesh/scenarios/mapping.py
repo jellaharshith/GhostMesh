@@ -1,4 +1,4 @@
-"""Map GDELT/ACLED events to a normalized Scenario dict."""
+"""Map fused OSINT events (GDELT / LiveUAMap / UCDP / GTD) to a normalized Scenario dict."""
 from __future__ import annotations
 import hashlib
 from typing import Any, Dict, List, Optional, Tuple
@@ -339,6 +339,10 @@ def articles_to_scenario(
         (a.get("title", "") + " " + a.get("domain", "")).lower()
         for a in articles
     )
+    query_blob = (query or "").lower()
+    if query_blob:
+        # Ensure user-provided scenario text directly shapes actor/infra inference.
+        blob += " " + query_blob
 
     # Augment blob with event summaries for better infra/actor detection
     if events:
@@ -405,19 +409,21 @@ def articles_to_scenario(
         "name": f"Operation {_codename(query)}",
         "brief": (
             f"{actor} has been observed conducting cyber operations targeting {infra_label}. "
+            f"Scenario trigger: {query}. "
             f"{tension_desc}"
-            f"Threat intelligence derived from GDELT/ACLED open-source reporting. {brief_suffix} "
+            f"Threat intelligence derived from fused OSINT (GDELT, LiveUAMap, UCDP, GTD). {brief_suffix} "
             "Blue Team must assess the threat and develop a defensive response."
         ),
         "blue_objectives": [
             f"Assess and contain threat to {infra_label}",
+            f"Stabilize operations impacted by scenario condition: {query[:120]}",
             "Identify adversary TTPs and initial access vector",
             "Evict actor while maintaining operational continuity",
             "Preserve evidence for attribution and coordination",
         ],
         "red_posture": (
             f"{actor} conducting reconnaissance and pre-positioning against {infra_label}. "
-            f"Threat derived from GDELT/ACLED OSINT — exact foothold unknown. "
+            f"Threat derived from fused OSINT (GDELT/LiveUAMap/UCDP/GTD) — exact foothold unknown. "
             f"Tension level: {tension_level:.2f}. Assume persistence capability. "
             f"Assessed posture: {red_posture_label}. "
             "Escalation authority: disruption of primary operations."

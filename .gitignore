@@ -1,0 +1,25 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+
+# Secrets — never commit real keys
+.env
+**/.env
+
+# Local state
+*.db
+.claude/
+.claire/
+claude/
+**/.playwright-cli/
+
+# Chroma / caches (under ghostmesh/)
+ghostmesh/data/chroma/
+ghostmesh/data/cache/
+
+# OS
+.DS_Store

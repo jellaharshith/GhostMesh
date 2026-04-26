@@ -2,7 +2,10 @@
 __pycache__/
 *.pyc
 *.pyo
+.env
+ghostmesh.db
 data/ghostmesh.db
 data/chroma/
 data/cache/
 .DS_Store
+.playwright-cli/

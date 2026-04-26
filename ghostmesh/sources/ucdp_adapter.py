@@ -8,7 +8,7 @@ UCDP data covers:
 - Georeferenced Event Dataset (GED) — incident level
 - Battle-Related Deaths Dataset
 
-Schema maps to the same Event model as acled_adapter / gdelt_adapter.
+Schema maps to the same Event model as gdelt_adapter / liveuamap_adapter.
 """
 from __future__ import annotations
 import json
