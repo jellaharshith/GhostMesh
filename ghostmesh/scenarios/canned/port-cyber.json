@@ -1,0 +1,20 @@
+{
+  "id": "port-cyber-001",
+  "name": "Operation Tidegate",
+  "brief": "IRGC-affiliated threat actor (CyberAv3ngers-class) has compromised the SCADA network of a major US East Coast container terminal following exploitation of an unpatched Unitronics Vision PLC (CVE-2023-6448). Actor has established persistence on two terminal operating system servers and is conducting reconnaissance of crane control PLCs. Blue Team must evict actor and restore terminal operational security before actor achieves container crane disruption.",
+  "blue_objectives": [
+    "Restore secure operations on terminal SCADA network",
+    "Evict actor from TOS servers and PLC environment",
+    "Patch Unitronics vulnerabilities across all PLCs",
+    "Preserve evidence for attribution and federal notification"
+  ],
+  "red_posture": "Actor holds persistence on TOS-SRV-01 and TOS-SRV-02, has conducted port scans of crane PLC subnet. Defacement observed on HMI displays. Attribution confidence: medium (IRGC nexus, Palestine solidarity messaging). Escalation authority: port disruption.",
+  "assets": [
+    {"name": "TOS-SRV-01", "type": "Terminal Operating System Server", "status": "compromised"},
+    {"name": "TOS-SRV-02", "type": "Terminal Operating System Server", "status": "compromised"},
+    {"name": "CRANE-PLC-01", "type": "Crane Control PLC", "status": "at-risk"},
+    {"name": "CRANE-PLC-02", "type": "Crane Control PLC", "status": "at-risk"},
+    {"name": "HMI-PORT-01", "type": "Port Operations HMI", "status": "defaced"},
+    {"name": "SCADA-FW", "type": "SCADA Firewall", "status": "online"}
+  ]
+}
