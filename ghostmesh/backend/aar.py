@@ -63,7 +63,10 @@ def _build_why(
     why: List[str] = []
     rationale = adj.get("rationale", "")
     if rationale:
-        why.append(rationale.split(". ")[0] + ".")
+        # Use the outcome-class sentence (second sentence) if present, else first
+        sentences = [s.strip() for s in rationale.split(". ") if s.strip()]
+        outcome_sent = next((s for s in sentences if "outcome class" in s.lower()), None)
+        why.append((outcome_sent or sentences[0]) + ".")
     stealth = parsed.get("stealth_level", "medium")
     if stealth == "low":
         why.append("Low stealth posture inflated detection risk.")
@@ -73,7 +76,14 @@ def _build_why(
         why.append("Parser confidence was low — assumptions may have skewed adjudication.")
     red_rat = red.get("rationale", "")
     if red_rat:
-        why.append(red_rat.split(".")[0] + ".")
+        # Rationale: "Posture=X (pressure...). Blue 'action'... Tier=..."
+        # "Blue '" is a reliable split point that avoids decimal false splits
+        idx = red_rat.find("Blue '")
+        if idx > 0:
+            posture_clause = red_rat[:idx].rstrip(". ")
+            why.append(f"Red {posture_clause}." if posture_clause else red_rat[:80] + "…")
+        else:
+            why.append(red_rat[:120].rstrip() + ".")
     return why[:4]
 
 
