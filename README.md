@@ -1,8 +1,9 @@
 # GhostMesh
 
-**AI-powered cyber wargaming engine.** Type a scenario, get a live intelligence-fused threat picture, then submit English-language Blue Team moves and receive probabilistic adjudication, adaptive Red Cell responses, and doctrine-grounded after-action reviews — all running locally.
+GhostMesh is an AI-assisted cyber wargaming platform that runs locally.  
+Describe an operational scenario in plain English, fuse live and seeded intelligence into a mission brief, execute Blue Team actions, and receive probabilistic adjudication, adaptive Red Cell responses, and doctrine-grounded after-action reviews.
 
-Built for the SCSP Hackathon. Designed for operators, analysts, and wargame designers who need fast, credible, explainable cyber decision support.
+Built for the SCSP Hackathon and designed for operators, analysts, and exercise planners who need fast, explainable cyber decision support.
 
 ---
 
@@ -142,12 +143,24 @@ The `anthropic` package is listed in `requirements.txt` for optional LLM feature
 
 ### Using the UI
 
-1. In the sidebar, type a scenario query under **"New Scenario"** — e.g. `Volt Typhoon Texas power grid`
-2. Click **⚡ Launch Scenario** — the engine fuses GDELT + LiveUAMap + UCDP + GTD + OSM + OpenTopography + doctrine (~10-15s)
-3. The **Brief** tab shows: Tension Score, Conflict Score, Infrastructure at Risk, Doctrine Notes, Strategic Assessment
-4. Open the **Live Intel** expander on the Operations tab to see live events, GTD historical baseline, and terrain context
-5. Switch to **Move** and describe a Blue Team defensive action in plain English
-6. Hit **Execute Move** — get adjudication, Red Cell response, and AAR with JCS / CSIS doctrine citations
+1. In the sidebar, enter a scenario query under **New Scenario**  
+   Example: `Volt Typhoon Texas power grid`
+2. Enter a **First Blue Move** in plain English (required before launch)
+3. Click **⚡ Launch Scenario**  
+   GhostMesh seeds the scenario, fuses intelligence sources, and immediately executes your first move.
+4. Review the **Brief** tab:
+   - Mission brief and fused intelligence picture
+   - Scenario objectives, red posture, and infrastructure context
+   - **Mission Brief Results** (move parse, adjudication, red response, and AAR) from the launch move
+5. Use the **Move** tab for additional turns, then review **Result**, **AAR**, and **Timeline** as needed.
+
+### Operator Workflow (at a glance)
+
+- **Brief:** Understand the scenario and evaluate immediate operational context.
+- **Move:** Submit follow-on Blue Team actions.
+- **Result:** Inspect outcome metrics and rationale for the latest turn.
+- **AAR:** Read doctrine-grounded narrative debrief with citations.
+- **Timeline:** Review the full multi-turn campaign progression.
 
 ### Smoke test (curl)
 
