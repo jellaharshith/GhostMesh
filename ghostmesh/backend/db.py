@@ -39,6 +39,18 @@ def init_db() -> None:
         conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_aars_turn ON aars(turn_id)"
         )
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS scenarios (
+                id          TEXT PRIMARY KEY,
+                name        TEXT NOT NULL,
+                json        TEXT NOT NULL,
+                created_ts  TEXT NOT NULL,
+                is_active   INTEGER NOT NULL DEFAULT 0
+            )
+        """)
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_scenarios_active ON scenarios(is_active)"
+        )
         conn.commit()
 
 
@@ -128,3 +140,44 @@ def reset_turns() -> None:
         conn.execute("DELETE FROM aars")
         conn.execute("DELETE FROM turns")
         conn.commit()
+
+
+def save_scenario(scenario_id: str, name: str, scenario_json: Dict[str, Any], created_ts: str) -> None:
+    with _conn() as conn:
+        conn.execute(
+            "INSERT OR REPLACE INTO scenarios (id, name, json, created_ts, is_active) VALUES (?, ?, ?, ?, 0)",
+            (scenario_id, name, json.dumps(scenario_json), created_ts),
+        )
+        conn.commit()
+
+
+def get_active_scenario() -> Optional[Dict[str, Any]]:
+    with _conn() as conn:
+        row = conn.execute(
+            "SELECT json FROM scenarios WHERE is_active = 1 LIMIT 1"
+        ).fetchone()
+    return json.loads(row["json"]) if row else None
+
+
+def set_active_scenario(scenario_id: str) -> None:
+    with _conn() as conn:
+        conn.execute("UPDATE scenarios SET is_active = 0")
+        conn.execute("UPDATE scenarios SET is_active = 1 WHERE id = ?", (scenario_id,))
+        conn.commit()
+
+
+def list_scenarios() -> List[Dict[str, Any]]:
+    with _conn() as conn:
+        rows = conn.execute(
+            "SELECT id, name, json, created_ts, is_active FROM scenarios ORDER BY created_ts"
+        ).fetchall()
+    return [
+        {
+            "id": row["id"],
+            "name": row["name"],
+            "scenario": json.loads(row["json"]),
+            "created_ts": row["created_ts"],
+            "is_active": bool(row["is_active"]),
+        }
+        for row in rows
+    ]

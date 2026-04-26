@@ -195,6 +195,7 @@ def _render_ui_text(
     cascades: List[Dict[str, str]],
     next_action: str,
     confidence: float,
+    citations: Optional[List[Dict]] = None,
 ) -> str:
     conf_icon = "🟢" if confidence >= 0.75 else ("🟡" if confidence >= 0.50 else "🔴")
     lines = [
@@ -223,6 +224,12 @@ def _render_ui_text(
     else:
         lines.append("- *(none projected)*")
     lines += ["", f"**👉 Recommended next move:** {next_action}"]
+    if citations:
+        lines += ["", "**Sources**"]
+        for c in citations[:3]:
+            src = c.get("source", "")
+            txt = c.get("text", "")[:120]
+            lines.append(f"- 📄 *{src}*: {txt}…")
     return "\n".join(lines)
 
 
@@ -247,6 +254,17 @@ def generate_aar(
 
     what     = _build_what_happened(parsed, adjudication, red)
     why      = _build_why(parsed, adjudication, red)
+    # Retrieval-grounded citations (best-effort, never raises)
+    citations: list = []
+    try:
+        from retrieval.service import retrieve
+        action_str = parsed.get("action", "unknown")
+        snips = retrieve(f"{action_str} {outcome_class} doctrine", k=3, tags=["concept", "defense"])
+        if snips:
+            why.append(f"Doctrine note: {snips[0]['text'][:140]}")
+            citations = snips
+    except Exception:
+        pass
     risks    = _extract_risks(adjudication, red, history, action)
     cascades = _project_cascades(adjudication.get("cascading_effects", []))
     nxt      = _recommend_next(outcome_class, red)
@@ -260,7 +278,7 @@ def generate_aar(
         parsed.get("target", "unknown"),
         red.get("escalation_level", "hold"),
     )
-    ui_text = _render_ui_text(turn_id, head, what, why, risks, cascades, nxt, conf)
+    ui_text = _render_ui_text(turn_id, head, what, why, risks, cascades, nxt, conf, citations)
 
     aar: Dict[str, Any] = {
         "turn_id":                 turn_id,
@@ -275,5 +293,6 @@ def generate_aar(
         "confidence":              conf,
         "ui_text":                 ui_text,
         "generated_ts":            datetime.now(timezone.utc).isoformat(),
+        "citations":               citations,
     }
     return _polish_aar(aar)

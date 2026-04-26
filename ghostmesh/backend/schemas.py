@@ -3,6 +3,13 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
+class RetrievalSnippet(BaseModel):
+    text: str
+    source: str
+    tags: List[str] = []
+    score: float = 0.0
+
+
 class TurnRequest(BaseModel):
     blue_move: str
 
@@ -72,6 +79,7 @@ class AfterAction(BaseModel):
     confidence: float
     ui_text: str
     generated_ts: str
+    citations: List[RetrievalSnippet] = []
 
 
 class AARResponse(BaseModel):
@@ -91,3 +99,12 @@ class Scenario(BaseModel):
     blue_objectives: List[str]
     red_posture: str
     assets: List[ScenarioAsset]
+
+
+class SeedRequest(BaseModel):
+    query: str
+    use_api: bool = True
+
+
+class SelectRequest(BaseModel):
+    scenario_id: str

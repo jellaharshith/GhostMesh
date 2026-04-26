@@ -6,6 +6,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend import db, scenario as scenario_mod
+from scenarios import seeder as scenario_seeder
+from backend.schemas import SeedRequest, SelectRequest
 from backend.aar import generate_aar
 from backend.adjudicator import adjudicate
 from backend.parser import parse_move
@@ -38,11 +40,43 @@ app.add_middleware(
 @app.on_event("startup")
 def startup() -> None:
     db.init_db()
+    try:
+        from retrieval.service import warmup
+        warmup()
+    except Exception:
+        pass
 
 
 @app.get("/scenario", response_model=Scenario, summary="Active scenario")
 def get_scenario() -> Dict[str, Any]:
     return scenario_mod.get_scenario()
+
+
+@app.get("/scenarios", summary="List all scenarios")
+def list_scenarios():
+    canned = [s for s in scenario_seeder.list_canned()]
+    db_scenarios = db.list_scenarios()
+    # Merge: canned first, then DB-saved (exclude canned IDs already included)
+    canned_ids = {s["id"] for s in canned}
+    extra = [row["scenario"] for row in db_scenarios if row["id"] not in canned_ids]
+    return canned + extra
+
+
+@app.post("/scenarios/seed", response_model=Scenario, summary="Seed a scenario from news (GDELT) or use canned")
+def seed_scenario(body: SeedRequest):
+    if body.use_api:
+        sc = scenario_seeder.seed_from_api(body.query, timeout_s=4.0)
+    else:
+        sc = scenario_seeder.get_scenario()
+    return sc
+
+
+@app.post("/scenarios/select", response_model=Scenario, summary="Set active scenario")
+def select_scenario(body: SelectRequest):
+    sc = scenario_seeder.select(body.scenario_id)
+    if sc is None:
+        raise HTTPException(status_code=404, detail=f"Scenario '{body.scenario_id}' not found")
+    return sc
 
 
 @app.post("/turn", response_model=TurnResponse, summary="Submit a Blue move")
