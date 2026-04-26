@@ -1,0 +1,20 @@
+{
+  "id": "telecom-bgp-001",
+  "name": "Operation Phantom Route",
+  "brief": "A nation-state actor (suspected DPRK Lazarus nexus) has compromised a route reflector at a US Tier-1 ISP via exploitation of a BGP session authentication vulnerability. Actor has the capability to inject BGP route advertisements that could redirect or blackhole significant portions of US internet traffic. Financial and critical infrastructure sectors are at risk. Blue Team must identify injected routes, restore legitimate routing, and harden BGP authentication before actor executes traffic manipulation.",
+  "blue_objectives": [
+    "Identify and withdraw all unauthorized BGP route injections",
+    "Restore BGP session authentication (RPKI/BGPsec)",
+    "Evict actor from route reflector infrastructure",
+    "Coordinate with upstream peers for route validation"
+  ],
+  "red_posture": "Actor holds access to Route Reflector RR-CORE-01 with BGP session credentials. Has pre-staged route injection scripts. Targeting financial sector ASNs for traffic interception. Capability for large-scale blackhole attack confirmed. Escalation authority: financial sector disruption.",
+  "assets": [
+    {"name": "RR-CORE-01", "type": "BGP Route Reflector", "status": "compromised"},
+    {"name": "RR-CORE-02", "type": "BGP Route Reflector", "status": "at-risk"},
+    {"name": "PEERING-RTR-01", "type": "Peering Router", "status": "at-risk"},
+    {"name": "NMS-SERVER", "type": "Network Management System", "status": "at-risk"},
+    {"name": "RPKI-VALIDATOR", "type": "RPKI Validation Server", "status": "offline"},
+    {"name": "MGMT-VPN", "type": "Management VPN", "status": "compromised"}
+  ]
+}
