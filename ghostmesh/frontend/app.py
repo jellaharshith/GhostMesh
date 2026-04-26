@@ -1006,8 +1006,22 @@ with st.sidebar:
         current_idx = scenario_ids.index(st.session_state["active_scenario_id"])
 
     if scenarios_list:
-        chosen_name = st.selectbox("Select scenario", scenario_names, index=current_idx, label_visibility="collapsed")
-        chosen_id = scenario_ids[scenario_names.index(chosen_name)]
+        # Build display labels — append (id suffix) when names collide to avoid mis-selection
+        name_counts: Dict[str, int] = {}
+        for n in scenario_names:
+            name_counts[n] = name_counts.get(n, 0) + 1
+        display_labels = [
+            f"{s['name']} [{s['id'][-6:]}]" if name_counts[s["name"]] > 1 else s["name"]
+            for s in scenarios_list
+        ]
+        id_to_label = {s["id"]: lbl for s, lbl in zip(scenarios_list, display_labels)}
+        chosen_id = st.selectbox(
+            "Select scenario",
+            options=scenario_ids,
+            format_func=lambda sid: id_to_label.get(sid, sid),
+            index=current_idx,
+            label_visibility="collapsed",
+        )
         if chosen_id != st.session_state.get("active_scenario_id"):
             res = _post("/scenarios/select", {"scenario_id": chosen_id}, api_url)
             if res:

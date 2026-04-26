@@ -128,6 +128,7 @@ def seed_from_api(
     3. Tension score + actor relationships from events
     4. mapping.articles_to_scenario extended with event context
     """
+    global _active
     try:
         from . import mapping
         from sources import gdelt_adapter, acled_adapter, tension as tension_mod
@@ -200,8 +201,11 @@ def seed_from_api(
         try:
             from backend import db
             db.save_scenario(sc["id"], sc["name"], sc, _utcnow())
+            db.set_active_scenario(sc["id"])
         except Exception:
             pass
+        with _lock:
+            _active = sc
         return sc
     except Exception as exc:
         logger.warning("seed_from_api failed (%s), using canned fallback", exc)

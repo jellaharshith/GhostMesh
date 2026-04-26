@@ -71,6 +71,9 @@ def seed_scenario(body: SeedRequest):
             use_acled=body.use_acled,
             country=body.country,
         )
+        # Ensure the newly seeded scenario is set as active
+        if sc and sc.get("id"):
+            scenario_seeder.select(sc["id"])
     else:
         sc = scenario_seeder.get_scenario()
     return sc
