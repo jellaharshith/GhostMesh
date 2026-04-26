@@ -692,6 +692,14 @@ def generate_red_response(
     # Rationale includes state breadcrumbs
     fh_list = ", ".join(sorted(state.footholds)) if state.footholds else "none"
     doctrine_note = f" [{doctrine_hint}]" if doctrine_hint else ""
+    # Retrieval-grounded APT TTP citation (best-effort)
+    try:
+        from retrieval.service import retrieve
+        apt_snips = retrieve(f"APT {action} {posture} TTP", k=1, tags=["apt", "mitre"])
+        if apt_snips:
+            doctrine_note = doctrine_note + f" | {apt_snips[0]['text'][:100]}"
+    except Exception:
+        pass
     rationale = (
         f"Posture={posture} (pressure {state.pressure:.1f}, "
         f"footholds {len(state.footholds)}: [{fh_list}], "

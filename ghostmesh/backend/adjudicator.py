@@ -323,6 +323,15 @@ def adjudicate(parsed: Dict[str, Any], scenario: Dict[str, Any], turn_id: int) -
         f"(P(attrib|detect)={attrib_given_detect:.0%})."
     )
 
+    # Retrieval-grounded doctrine note (best-effort)
+    try:
+        from retrieval.service import retrieve
+        snips = retrieve(f"{action} {target} ICS doctrine", k=2, tags=["mitre", "defense"])
+        if snips:
+            rationale += f" Doctrine: {snips[0]['text'][:120]}"
+    except Exception:
+        pass
+
     return {
         "success_probability": success_prob,
         "detection_risk":      detection_risk,
