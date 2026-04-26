@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 CHROMA_DIR = Path(__file__).parents[1] / "data" / "chroma"
 COLLECTION_NAME = "ghostmesh-doctrine"
-_TIMEOUT_MS = 250
+_TIMEOUT_MS = 5000  # cold start loads ONNX model (~1-2s); subsequent calls are <100ms
+_WARMED_UP = False
 
 _chroma_client = None
 _collection = None
@@ -36,11 +37,19 @@ def _get_collection():
 
 
 def warmup() -> None:
-    """Pre-load chroma client and embedding model. Call on app startup."""
+    """Pre-load chroma client and fire a dummy query to warm ONNX embeddings."""
+    global _WARMED_UP
+    if _WARMED_UP:
+        return
     try:
-        _get_collection()
-    except Exception:
-        pass
+        coll = _get_collection()
+        if coll is not None:
+            coll.query(query_texts=["warmup"], n_results=1)
+            logger.debug("Chroma warmed up (%d chunks)", coll.count())
+        _WARMED_UP = True
+    except Exception as exc:
+        logger.debug("Chroma warmup failed (%s), TF-IDF will be used", exc)
+        _WARMED_UP = True
 
 
 def _chroma_retrieve(query: str, k: int, tags: Optional[List[str]]) -> List[dict]:
