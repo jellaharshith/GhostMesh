@@ -7,6 +7,35 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# Per-scenario GDELT query strings for live intel enrichment.
+# Keyed by scenario id prefix (matched via startswith).
+_SCENARIO_QUERIES: Dict[str, Dict[str, str]] = {
+    "port-cyber": {
+        "query": "container port SCADA cyber attack critical infrastructure",
+        "country": "United States",
+    },
+    "tidewatch": {
+        "query": "power grid SCADA cyber attack critical infrastructure APT",
+        "country": "United States",
+    },
+    "grid-substation": {
+        "query": "power substation SCADA cyber attack grid disruption",
+        "country": "United States",
+    },
+    "regional-grid": {
+        "query": "power grid regional cyber threat SCADA ICS",
+        "country": "United States",
+    },
+    "baltic-grid": {
+        "query": "Baltic power grid cyber attack substation NATO",
+        "country": "Estonia",
+    },
+    "telecom-bgp": {
+        "query": "BGP route hijack telecom cyber attack ISP infrastructure",
+        "country": "United States",
+    },
+}
+
 logger = logging.getLogger(__name__)
 
 CANNED_DIR = Path(__file__).parent / "canned"
@@ -92,20 +121,82 @@ def get_scenario(scenario_id: Optional[str] = None) -> Dict[str, Any]:
     return default
 
 
+def _intel_query_for(scenario_id: str, sc: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, str]]:
+    """Return GDELT enrichment query params for a scenario id, or derive from scenario name/brief."""
+    for prefix, params in _SCENARIO_QUERIES.items():
+        if scenario_id.startswith(prefix):
+            return params
+    # Fallback: derive a query from the scenario name or brief
+    if sc:
+        name = sc.get("name", "")
+        brief = sc.get("brief", "")[:200]
+        if name or brief:
+            return {"query": f"{name} {brief[:80]}".strip(), "country": "United States"}
+    return None
+
+
+def _enrich_canned(sc: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Overlay live GDELT/OSM intel onto a canned scenario dict.
+
+    Fetches only the intel fields (tension_score, conflict_score,
+    infrastructure_risk_score, adversary_aggression_score, scenario_summary,
+    doctrine_notes, strategic_notes, infrastructure, recent_events,
+    recommended_red_posture) from a live seed, then merges them into the
+    canned scenario's core fields (id, name, brief, blue_objectives,
+    red_posture, assets) which are never overwritten.
+
+    Silent on any failure — returns the original sc unchanged.
+    """
+    intel_params = _intel_query_for(sc.get("id", ""), sc)
+    if not intel_params:
+        return sc
+    try:
+        enriched = seed_from_api(
+            query=intel_params["query"],
+            timeout_s=5.0,
+            country=intel_params.get("country"),
+        )
+        intel_keys = [
+            "tension_level", "tension_score", "conflict_score",
+            "infrastructure_risk_score", "adversary_aggression_score",
+            "scenario_summary", "doctrine_notes", "strategic_notes",
+            "infrastructure", "recent_events", "actor_relationships",
+            "recommended_red_posture", "sources_used",
+            "historical_baseline", "terrain",
+        ]
+        merged = dict(sc)
+        # Preserve immutable user-authored brief/query metadata.
+        merged["user_brief"] = sc.get("user_brief") or sc.get("brief", "")
+        merged["scenario_query"] = sc.get("scenario_query") or merged.get("user_brief", "")
+        for k in intel_keys:
+            if k in enriched:
+                merged[k] = enriched[k]
+        return merged
+    except Exception as exc:
+        logger.debug("_enrich_canned failed for %s: %s", sc.get("id"), exc)
+        return sc
+
+
 def select(scenario_id: str) -> Optional[Dict[str, Any]]:
     """Set active scenario. Returns scenario dict or None if not found."""
     global _active
     sc = get_scenario(scenario_id)
     if sc.get("id") != scenario_id:
         return None
+
+    # Auto-enrich canned scenarios with live GDELT/OSM intel.
+    # Only enrich if the scenario lacks intel fields (i.e. is a bare canned file).
+    if not sc.get("tension_score") and not sc.get("recent_events"):
+        sc = _enrich_canned(sc)
+
     try:
         from backend import db
-        # Save to DB if not already there
         try:
             db.save_scenario(sc["id"], sc["name"], sc, _utcnow())
         except Exception:
             pass
-        db.set_active_scenario(scenario_id)
+        db.set_active_scenario(sc["id"])
     except Exception as exc:
         logger.debug("DB set_active failed: %s", exc)
     with _lock:
@@ -225,6 +316,10 @@ def seed_from_api(
         )
         if sc is None:
             raise ValueError("empty event list")
+
+        # Immutable source-of-truth text that frontend should always render.
+        sc["user_brief"] = query.strip()
+        sc["scenario_query"] = query.strip()
 
         # Attach the new enrichment blocks
         if historical_baseline:
