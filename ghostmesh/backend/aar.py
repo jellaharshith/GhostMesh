@@ -196,6 +196,8 @@ def _render_ui_text(
     next_action: str,
     confidence: float,
     citations: Optional[List[Dict]] = None,
+    doctrine_notes: Optional[List[str]] = None,
+    strategic_notes: Optional[List[str]] = None,
 ) -> str:
     conf_icon = "🟢" if confidence >= 0.75 else ("🟡" if confidence >= 0.50 else "🔴")
     lines = [
@@ -224,6 +226,12 @@ def _render_ui_text(
     else:
         lines.append("- *(none projected)*")
     lines += ["", f"**👉 Recommended next move:** {next_action}"]
+    if doctrine_notes:
+        lines += ["", "**Joint Doctrine Context**"]
+        lines += [f"- {n}" for n in doctrine_notes[:2]]
+    if strategic_notes:
+        lines += ["", "**Strategic Assessment (CSIS)**"]
+        lines += [f"- {n}" for n in strategic_notes[:2]]
     if citations:
         lines += ["", "**Sources**"]
         for c in citations[:3]:
@@ -291,7 +299,12 @@ def generate_aar(
         parsed.get("target", "unknown"),
         red.get("escalation_level", "hold"),
     )
-    ui_text = _render_ui_text(turn_id, head, what, why, risks, cascades, nxt, conf, citations)
+    sc_doctrine = scenario.get("doctrine_notes", [])
+    sc_strategic = scenario.get("strategic_notes", [])
+    ui_text = _render_ui_text(
+        turn_id, head, what, why, risks, cascades, nxt, conf, citations,
+        doctrine_notes=sc_doctrine, strategic_notes=sc_strategic,
+    )
 
     aar: Dict[str, Any] = {
         "turn_id":                 turn_id,

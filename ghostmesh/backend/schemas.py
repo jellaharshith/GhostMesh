@@ -123,6 +123,17 @@ class Scenario(BaseModel):
     recent_events: List[EventModel] = []
     sources_used: List[str] = []
 
+    # Fused intelligence state — populated by seed_from_api
+    tension_score: int = 0                       # 0–100 integer for display
+    conflict_score: int = 0                      # armed-conflict intensity 0–100
+    infrastructure_risk_score: int = 0           # infra criticality composite 0–100
+    adversary_aggression_score: int = 0          # red posture aggressiveness 0–100
+    scenario_summary: str = ""                   # synthesized narrative paragraph
+    doctrine_notes: List[str] = []               # Joint-doctrine grounded observations
+    strategic_notes: List[str] = []              # CSIS-style strategic framing
+    infrastructure: List[dict] = []              # OSM/Overpass infra records
+    recommended_red_posture: str = ""            # doctrine-derived red posture label
+
 
 class SeedRequest(BaseModel):
     query: str

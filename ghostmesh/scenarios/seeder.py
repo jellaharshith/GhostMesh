@@ -137,7 +137,15 @@ def seed_from_api(
         if use_acled:
             acled_events = acled_adapter.fetch(query, country=country, timeout_s=timeout_s)
 
-        all_events = gdelt_events + acled_events
+        # UCDP conflict history — always available via seed, enriches conflict_score
+        try:
+            from sources import ucdp_adapter
+            ucdp_events = ucdp_adapter.fetch(query=query, country=country, timeout_s=3.0)
+        except Exception as exc:
+            logger.debug("UCDP fetch failed: %s", exc)
+            ucdp_events = []
+
+        all_events = gdelt_events + acled_events + ucdp_events
         # De-dup by event_id
         seen_ids: set = set()
         unique_events = []
@@ -147,6 +155,21 @@ def seed_from_api(
                 unique_events.append(ev)
 
         tension_level, actor_rels = tension_mod.score(unique_events)
+
+        # OSM/Overpass infrastructure context — bbox derived from query/country
+        try:
+            from sources import overpass_adapter
+            # Map query + country text to a geographic bounding box
+            region_hint = f"{query} {country or ''}".strip()
+            bbox = overpass_adapter.bbox_for_region(region_hint)
+            if bbox:
+                logger.info("Overpass: using bbox %s for region '%s'", bbox, region_hint)
+            infra_records = overpass_adapter.fetch(bbox=bbox, timeout_s=6.0)
+            infra_records = overpass_adapter.filter_by_criticality(infra_records, "high")
+            logger.info("Overpass: %d high-criticality infra records", len(infra_records))
+        except Exception as exc:
+            logger.debug("Overpass fetch failed: %s", exc)
+            infra_records = []
 
         # Build raw article list for mapping (GDELT shape — backward compat)
         articles = [
@@ -160,6 +183,7 @@ def seed_from_api(
             events=unique_events,
             tension_level=tension_level,
             actor_relationships=actor_rels,
+            infrastructure=infra_records,
         )
         if sc is None:
             raise ValueError("empty event list")
@@ -169,6 +193,8 @@ def seed_from_api(
             sources_used.append("gdelt")
         if acled_events:
             sources_used.append("acled")
+        if ucdp_events:
+            sources_used.append("ucdp")
         sc["sources_used"] = sources_used
 
         try:

@@ -993,8 +993,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     st.markdown('<hr style="margin:0 0 12px 0">', unsafe_allow_html=True)
 
-    st.markdown('<div class="gm-section-label">API Endpoint</div>', unsafe_allow_html=True)
-    api_url = st.text_input("API base URL", value="http://localhost:8029", label_visibility="collapsed")
+    api_url = "http://localhost:8029"
     st.markdown('<hr style="margin:8px 0">', unsafe_allow_html=True)
 
     st.markdown('<div class="gm-section-label">Scenario</div>', unsafe_allow_html=True)
@@ -1015,36 +1014,25 @@ with st.sidebar:
                 st.session_state["active_scenario_id"] = chosen_id
                 st.rerun()
 
-    with st.expander("Seed from news"):
-        seed_query = st.text_input("News query", placeholder="Volt Typhoon substation", key="seed_q")
-        if st.button("Seed Scenario", use_container_width=True):
-            if seed_query.strip():
-                with st.spinner("Fetching from GDELT…"):
-                    seeded = _post("/scenarios/seed", {"query": seed_query, "use_api": True}, api_url)
-                if seeded:
-                    st.success(f"Seeded: {seeded['name']}")
-                    st.rerun()
-            else:
-                st.warning("Enter a query first.")
-
-    with st.expander("Custom Scenario"):
-        scenario_text = st.text_area(
-            "Paste or describe your scenario",
-            placeholder="Baltic Grid Crisis — State-backed actor compromises contractor VPN…",
-            height=130,
-            key="new_sc_text",
-            label_visibility="collapsed",
-        )
-        if st.button("Load Scenario", use_container_width=True, type="primary"):
-            if not scenario_text.strip():
-                st.warning("Enter a scenario description first.")
-            else:
-                with st.spinner("Parsing scenario…"):
-                    result = _post("/scenarios/parse", {"text": scenario_text.strip()}, api_url)
-                if result:
-                    st.success(f"Loaded: {result['name']}")
-                    st.session_state["active_scenario_id"] = result["id"]
-                    st.rerun()
+    st.markdown('<div class="gm-section-label" style="margin-top:10px">New Scenario</div>', unsafe_allow_html=True)
+    scenario_query = st.text_input(
+        "Scenario",
+        placeholder="e.g. Volt Typhoon Texas power grid",
+        key="scenario_input",
+        label_visibility="collapsed",
+    )
+    st.caption("GDELT · ACLED · UCDP · OSM · JP 3-12 doctrine")
+    if st.button("⚡ Launch Scenario", use_container_width=True, type="primary"):
+        if scenario_query.strip():
+            with st.spinner("Fusing live intelligence…"):
+                seeded = _post("/scenarios/seed", {"query": scenario_query.strip(), "use_api": True, "use_acled": True}, api_url)
+            if seeded:
+                sources = " · ".join(s.upper() for s in seeded.get("sources_used", [])) or "SEED"
+                st.success(f"✓ {sources} — **{seeded['name']}**")
+                st.session_state["active_scenario_id"] = seeded.get("id", "")
+                st.rerun()
+        else:
+            st.warning("Enter a scenario query first.")
 
     st.markdown('<hr style="margin:8px 0">', unsafe_allow_html=True)
     if st.button("Reset Session", use_container_width=True):
@@ -1150,6 +1138,122 @@ with tab_brief:
                 <tbody>{rows_html}</tbody>
             </table>"""
             _card("Critical Systems", table_html)
+
+        # ── Intel Feed (fused scenario data) ──────────────────────────────────
+        tension_score = scenario.get("tension_score", 0)
+        conflict_score = scenario.get("conflict_score", 0)
+        infra_risk = scenario.get("infrastructure_risk_score", 0)
+        agg_score = scenario.get("adversary_aggression_score", 0)
+        scenario_summary_text = scenario.get("scenario_summary", "")
+        doctrine_notes = scenario.get("doctrine_notes", [])
+        strategic_notes = scenario.get("strategic_notes", [])
+        infra_records = scenario.get("infrastructure", [])
+        red_posture_label = scenario.get("recommended_red_posture", "")
+        recent_events = scenario.get("recent_events", [])
+
+        has_intel = any([tension_score, scenario_summary_text, doctrine_notes, infra_records, recent_events])
+
+        if has_intel:
+            st.markdown('<div class="gm-section-label" style="margin-top:18px;margin-bottom:8px">Intelligence Fusion</div>', unsafe_allow_html=True)
+
+            # Score row
+            def _score_bar(val: int, color: str = "#b03030") -> str:
+                pct = max(0, min(100, val))
+                return (
+                    f'<div style="display:flex;align-items:center;gap:8px">'
+                    f'<div style="flex:1;height:6px;background:#1a2230;border-radius:3px;overflow:hidden">'
+                    f'<div style="width:{pct}%;height:100%;background:{color};border-radius:3px"></div></div>'
+                    f'<span style="font-size:0.75rem;color:#8a97a8;min-width:30px;text-align:right">{pct}</span>'
+                    f'</div>'
+                )
+
+            scores_html = f"""
+            <table style="width:100%;border-collapse:collapse">
+              <tr>
+                <td style="padding:4px 12px 4px 0;color:#5a6a7a;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;width:180px">Tension Score</td>
+                <td style="padding:4px 0">{_score_bar(tension_score, "#b03030")}</td>
+              </tr>
+              <tr>
+                <td style="padding:4px 12px 4px 0;color:#5a6a7a;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase">Conflict Intensity</td>
+                <td style="padding:4px 0">{_score_bar(conflict_score, "#c04a20")}</td>
+              </tr>
+              <tr>
+                <td style="padding:4px 12px 4px 0;color:#5a6a7a;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase">Infrastructure Risk</td>
+                <td style="padding:4px 0">{_score_bar(infra_risk, "#a06020")}</td>
+              </tr>
+              <tr>
+                <td style="padding:4px 12px 4px 0;color:#5a6a7a;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase">Adversary Aggression</td>
+                <td style="padding:4px 0">{_score_bar(agg_score, "#7030a0")}</td>
+              </tr>
+            </table>"""
+
+            posture_chip = ""
+            if red_posture_label == "aggressive":
+                posture_chip = '<span class="chip chip-red">AGGRESSIVE</span>'
+            elif red_posture_label == "opportunistic":
+                posture_chip = '<span class="chip chip-amber">OPPORTUNISTIC</span>'
+            elif red_posture_label == "conservative":
+                posture_chip = '<span class="chip chip-green">CONSERVATIVE</span>'
+
+            scores_header = f"Signal Scores {posture_chip}" if posture_chip else "Signal Scores"
+            _card(scores_header, scores_html)
+
+            # Scenario summary
+            if scenario_summary_text:
+                _card("Scenario Summary", f'<div class="gm-body">{scenario_summary_text}</div>')
+
+            col_doc, col_strat = st.columns(2)
+
+            # Doctrine notes
+            with col_doc:
+                if doctrine_notes:
+                    notes_html = _bullet_list(doctrine_notes)
+                    _card("Doctrine Grounding (JP 3-12 / JP 5-0)", notes_html)
+
+            # Strategic notes
+            with col_strat:
+                if strategic_notes:
+                    strat_html = _bullet_list(strategic_notes)
+                    _card("Strategic Assessment (CSIS)", strat_html)
+
+            # Infrastructure at risk from OSM
+            if infra_records:
+                infra_rows = "".join(
+                    f"""<tr>
+                        <td>{r.get('name', '—')}</td>
+                        <td style="color:#8a97a8">{r.get('type', '—').replace('_', ' ').title()}</td>
+                        <td>{r.get('location', '—')}</td>
+                        <td>{'<span class="chip chip-red">CRITICAL</span>' if r.get('criticality') == 'critical' else '<span class="chip chip-amber">HIGH</span>' if r.get('criticality') == 'high' else '<span class="chip chip-white">MED</span>'}</td>
+                        <td style="color:#6a7a8a;font-size:0.72rem">{r.get('risk_label', '')[:80]}</td>
+                    </tr>"""
+                    for r in infra_records[:6]
+                )
+                infra_table = f"""
+                <table class="gm-table">
+                    <thead><tr>
+                        <th>Facility</th><th>Type</th><th>Location</th><th>Criticality</th><th>Risk Context</th>
+                    </tr></thead>
+                    <tbody>{infra_rows}</tbody>
+                </table>"""
+                _card("Key Infrastructure at Risk (OSM/Overpass)", infra_table)
+
+            # Recent intel events
+            if recent_events:
+                event_rows = "".join(
+                    f"""<tr>
+                        <td style="color:#5a6a7a;font-size:0.72rem">{ev.get('timestamp','')[:10] or '—'}</td>
+                        <td style="color:#8a97a8;font-size:0.72rem;text-transform:uppercase">{ev.get('source','—')}</td>
+                        <td style="color:#6a7a8a;font-size:0.72rem">{ev.get('location','—')}</td>
+                        <td style="font-size:0.72rem">{ev.get('summary','—')[:120]}</td>
+                    </tr>"""
+                    for ev in recent_events[:6]
+                )
+                events_table = f"""
+                <table class="gm-table">
+                    <thead><tr><th>Date</th><th>Source</th><th>Location</th><th>Signal</th></tr></thead>
+                    <tbody>{event_rows}</tbody>
+                </table>"""
+                _card("Recent Intelligence Signals (GDELT / Local Conflict)", events_table)
 
         _debug_json("Scenario raw data", scenario)
 
