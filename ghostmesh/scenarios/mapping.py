@@ -407,7 +407,11 @@ def articles_to_scenario(
     return {
         "id": sid,
         "name": f"Operation {_codename(query)}",
-        "brief": (
+        "user_brief": (query or "").strip(),
+        "scenario_query": (query or "").strip(),
+        # Keep brief faithful to the user input used to launch scenario.
+        # This prevents generated enrichment text from rewriting the mission brief.
+        "brief": (query or "").strip() or (
             f"{actor} has been observed conducting cyber operations targeting {infra_label}. "
             f"Scenario trigger: {query}. "
             f"{tension_desc}"

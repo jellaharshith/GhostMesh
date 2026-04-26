@@ -498,19 +498,125 @@ hr { border-color: #14213a !important; opacity: 1 !important; margin: 0.75rem 0 
     margin-top: 4px;
 }
 
-/* ── Sidebar scenario status ────────────────── */
-.gm-scenario-status {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 9px;
+/* ── Sidebar: New Scenario hero (primary CTA) ─ */
+.gm-launch-hero {
+    position: relative;
+    background: linear-gradient(160deg, #0c1830 0%, #080e18 45%, #060a10 100%);
+    border: 1px solid #1e4a8a;
+    border-radius: 14px;
+    padding: 22px 20px 12px 20px;
+    margin: 0 0 12px 0;
+    box-shadow:
+        0 0 40px rgba(20, 100, 200, 0.18),
+        0 4px 24px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(120, 200, 255, 0.1);
+    overflow: hidden;
 }
-.gm-scenario-label {
-    font-size: 0.64rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+.gm-launch-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0a2848, #38b2f0, #2058a0, #38b2f0, #0a2848);
+    border-radius: 14px 14px 0 0;
+    opacity: 0.95;
+}
+.gm-launch-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    background: radial-gradient(120% 80% at 50% 0%, rgba(56, 178, 240, 0.12) 0%, transparent 55%);
+    pointer-events: none;
+}
+.gm-launch-kicker {
+    position: relative;
+    z-index: 1;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: #5898c0;
+    color: #4a8ab8;
+    margin-bottom: 6px;
+}
+.gm-launch-title {
+    position: relative;
+    z-index: 1;
+    font-size: 1.6rem;
+    font-weight: 850;
+    letter-spacing: 0.02em;
+    color: #f0f6fc;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    text-shadow: 0 0 24px rgba(56, 178, 240, 0.35);
+}
+.gm-launch-lede {
+    position: relative;
+    z-index: 1;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #7a9cb8;
+    margin: 0 0 4px 0;
+    font-style: normal;
+}
+.gm-launch-sources {
+    position: relative;
+    z-index: 1;
+    font-size: 0.66rem;
+    line-height: 1.5;
+    color: #3d5a78;
+    letter-spacing: 0.02em;
+    margin-top: 8px;
+    margin-bottom: 2px;
+    padding: 8px 10px;
+    background: rgba(6, 12, 22, 0.65);
+    border: 1px solid #1a2d48;
+    border-radius: 8px;
+}
+/* Larger scenario field + launch button in sidebar */
+[data-testid="stSidebar"] [data-testid="stTextInput"] input {
+    min-height: 58px !important;
+    font-size: 1.02rem !important;
+    line-height: 1.35 !important;
+    border: 1px solid #2f74c0 !important;
+    border-radius: 10px !important;
+    padding: 14px 14px !important;
+    box-shadow: 0 0 0 1px rgba(56, 178, 240, 0.18) !important;
+}
+[data-testid="stSidebar"] [data-testid="stTextInput"] input:focus {
+    border-color: #38b2f0 !important;
+    box-shadow: 0 0 0 2px rgba(56, 178, 240, 0.25) !important;
+}
+[data-testid="stSidebar"] [data-testid="stTextInput"] input::placeholder {
+    color: #4b6f8c !important;
+}
+[data-testid="stSidebar"] [data-testid="stTextArea"] textarea {
+    min-height: 140px !important;
+    font-size: 1.02rem !important;
+    line-height: 1.45 !important;
+    border: 1px solid #2f74c0 !important;
+    border-radius: 10px !important;
+    padding: 14px 14px !important;
+    box-shadow: 0 0 0 1px rgba(56, 178, 240, 0.18) !important;
+}
+[data-testid="stSidebar"] [data-testid="stTextArea"] textarea:focus {
+    border-color: #38b2f0 !important;
+    box-shadow: 0 0 0 2px rgba(56, 178, 240, 0.25) !important;
+}
+[data-testid="stSidebar"] [data-testid="stTextArea"] textarea::placeholder {
+    color: #4b6f8c !important;
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button[kind="primary"] {
+    font-size: 0.92rem !important;
+    min-height: 56px !important;
+    padding: 0.85rem 1.1rem !important;
+    background: linear-gradient(180deg, #1a68c0 0%, #114878 100%) !important;
+    box-shadow: 0 4px 20px rgba(30, 120, 220, 0.45) !important;
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button[kind="primary"]:hover {
+    background: linear-gradient(180deg, #2080d8 0%, #185a98 100%) !important;
 }
 
 /* ── Column containers ──────────────────────── */
@@ -1082,85 +1188,113 @@ with st.sidebar:
         <div class="gm-wordmark-sub">AI Cyber Wargaming Engine</div>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown('<hr style="margin:0 0 14px 0">', unsafe_allow_html=True)
+    st.markdown('<hr style="margin:0 0 16px 0">', unsafe_allow_html=True)
 
-    # ── Navigation ────────────────────────────────────────────────────────────
-    st.markdown('<div class="gm-section-label">Navigation</div>', unsafe_allow_html=True)
-
-    _nav_items = [
-        ("BRIEF",    "📋", "Brief"),
-        ("MOVE",     "⚔",  "Move"),
-        ("RESULT",   "📊", "Result"),
-        ("AAR",      "📄", "AAR"),
-        ("TIMELINE", "📅", "Timeline"),
-    ]
-    _active = st.session_state["active_tab"]
-    for _tab_key, _icon, _label in _nav_items:
-        _is_active = _tab_key == _active
-        _btn_style = (
-            "background:#122040;color:#38b2f0;border:1px solid #1e4070;border-radius:6px;"
-            "padding:9px 12px;width:100%;text-align:left;cursor:pointer;"
-            "font-size:0.83rem;font-weight:700;letter-spacing:0.04em;margin-bottom:2px;display:block;"
-        ) if _is_active else (
-            "background:transparent;color:#587890;border:1px solid transparent;border-radius:6px;"
-            "padding:9px 12px;width:100%;text-align:left;cursor:pointer;"
-            "font-size:0.83rem;font-weight:600;letter-spacing:0.04em;margin-bottom:2px;display:block;"
-        )
-        if st.button(f"{_icon}  {_label}", key=f"nav_{_tab_key}", use_container_width=True):
-            st.session_state["active_tab"] = _tab_key
-            st.rerun()
-
-    st.markdown('<hr style="margin:10px 0 14px 0">', unsafe_allow_html=True)
-
-    # ── Scenario selector + status badge ──────────────────────────────────────
-    scenarios_list: List[Dict] = _get("/scenarios", API_URL) or []
-    scenario_names = [s["name"] for s in scenarios_list]
-    scenario_ids   = [s["id"]   for s in scenarios_list]
-
-    current_idx = 0
-    if st.session_state["active_scenario_id"] in scenario_ids:
-        current_idx = scenario_ids.index(st.session_state["active_scenario_id"])
-
-    # Derive status badge from active scenario tension
-    _active_scenario = _get("/scenario", API_URL) if st.session_state["active_scenario_id"] else None
-    _tension = (_active_scenario or {}).get("tension_level", 0.5)
-    if _tension >= 0.7:
-        _status_badge = '<span class="chip chip-red" style="font-size:0.6rem;padding:4px 9px">🔴 CRITICAL</span>'
-    elif _tension >= 0.45:
-        _status_badge = '<span class="chip chip-orange" style="font-size:0.6rem;padding:4px 9px">🟠 ELEVATED</span>'
-    else:
-        _status_badge = '<span class="chip chip-green" style="font-size:0.6rem;padding:4px 9px">🟢 NOMINAL</span>'
-
-    _live_scenario_name = scenarios_list[current_idx]["name"] if scenarios_list else "No scenario loaded"
-    st.markdown(f"""
-    <div class="gm-scenario-status">
-        <span class="gm-scenario-label">Live Scenario</span>
-        {_status_badge}
+    st.markdown("""
+    <div class="gm-launch-hero">
+        <div class="gm-launch-kicker">Start here</div>
+        <div class="gm-launch-title">New Scenario</div>
+        <p class="gm-launch-lede">Describe a crisis, region, or threat actor. We fuse open sources into a live wargame.</p>
     </div>
-    <div class="gm-dim-note" style="font-size:0.82rem;padding:4px 0 8px 0;font-weight:600;color:#e2e8f0">{_live_scenario_name}</div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="gm-section-label" style="margin-top:14px">New Scenario</div>', unsafe_allow_html=True)
-    scenario_query = st.text_input(
+    scenario_query = st.text_area(
         "Scenario",
-        placeholder="e.g. Volt Typhoon Texas power grid",
+        placeholder="e.g. Baltic grid instability, Volt Typhoon / Texas power grid",
         key="scenario_input",
         label_visibility="collapsed",
+        height=120,
     )
-    st.caption("GDELT · LiveUAMap · UCDP · GTD · OSM · OpenTopography · JCS doctrine")
+    st.markdown(
+        '<div class="gm-launch-sources">'
+        "GDELT · LiveUAMap · UCDP · GTD · OSM · OpenTopography · JCS doctrine"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 
-    st.markdown('<div style="margin-top:10px"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top:14px"></div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div style="font-size:0.70rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;'
+        'color:#38b2f0;margin-bottom:6px">First Blue Move</div>',
+        unsafe_allow_html=True,
+    )
+    first_move_input = st.text_area(
+        "First move",
+        placeholder="e.g. Isolate SCADA HMI from corporate VLAN and hunt for persistence on jump host",
+        key="first_move_input",
+        label_visibility="collapsed",
+        height=90,
+    )
+    st.markdown(
+        '<div style="font-size:0.72rem;color:#4a6a88;margin-top:4px;margin-bottom:12px">'
+        "Enter your Blue move — results will appear in the Brief after launch."
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
     if st.button("⚡ Launch Scenario", use_container_width=True, type="primary"):
-        if scenario_query.strip():
+        if not scenario_query.strip():
+            st.warning("Enter a scenario query first.")
+        elif not first_move_input.strip():
+            st.warning("Enter a Blue move before launching.")
+        else:
             with st.spinner("Fusing live intelligence…"):
                 seeded = _post("/scenarios/seed", {"query": scenario_query.strip(), "use_api": True}, API_URL)
             if seeded:
                 sources = " · ".join(s.upper() for s in seeded.get("sources_used", [])) or "SEED"
                 st.success(f"✓ {sources} — **{seeded['name']}**")
                 st.session_state["active_scenario_id"] = seeded.get("id", "")
+                st.session_state["last_result"] = None
+                st.session_state["active_tab"] = "BRIEF"
+                with st.spinner("Executing Blue move…"):
+                    move_result = _post("/turn", {"blue_move": first_move_input.strip()}, API_URL)
+                if move_result:
+                    st.session_state["last_result"] = move_result
+                    st.success(f"✓ Turn {move_result['turn_id']} recorded — results are now in Mission Brief.")
+                else:
+                    st.warning("Scenario launched, but first move did not complete. You can run the move from the MOVE tab.")
                 st.rerun()
+
+    st.markdown('<hr style="margin:12px 0">', unsafe_allow_html=True)
+
+    # ── Canned scenario picker ──────────────────────────────────────────────
+    _canned = _get("/scenarios", API_URL) or []
+    _canned_display = [s for s in _canned if not s.get("id", "").startswith("custom-")]
+    if _canned_display:
+        _canned_names = {s["name"]: s["id"] for s in _canned_display}
+        _selected_name = st.selectbox(
+            "Or load a preset scenario",
+            options=["— Select —"] + list(_canned_names.keys()),
+            key="canned_picker",
+            label_visibility="visible",
+        )
+        if _selected_name != "— Select —":
+            _selected_id = _canned_names[_selected_name]
+            if st.button("Load + Enrich with Live Intel", use_container_width=True):
+                with st.spinner(f"Loading {_selected_name} and fusing live intel…"):
+                    loaded = _post("/scenarios/select", {"scenario_id": _selected_id}, API_URL)
+                if loaded:
+                    sources = " · ".join(s.upper() for s in loaded.get("sources_used", [])) or "LOADED"
+                    st.success(f"✓ {sources} — **{loaded['name']}**")
+                    st.session_state["active_scenario_id"] = loaded.get("id", "")
+                    st.session_state["last_result"] = None
+                    st.session_state["active_tab"] = "BRIEF"
+                    st.rerun()
+                else:
+                    st.warning("Failed to load scenario.")
+
+    st.markdown('<hr style="margin:8px 0">', unsafe_allow_html=True)
+
+    if st.button("🛰 Refresh Live Intel", use_container_width=True, help="Re-fetch GDELT · LiveUAMap · UCDP · GTD · OSM for the current scenario"):
+        with st.spinner("Fetching latest intelligence signals…"):
+            refreshed = _post("/scenarios/refresh", {}, API_URL)
+        if refreshed:
+            sources = " · ".join(s.upper() for s in refreshed.get("sources_used", [])) or "LIVE"
+            st.success(f"✓ Intel refreshed — {sources}")
+            st.session_state["last_result"] = None
+            st.rerun()
         else:
-            st.warning("Enter a scenario query first.")
+            st.warning("No active scenario to refresh.")
 
     st.markdown('<hr style="margin:12px 0">', unsafe_allow_html=True)
 
@@ -1196,21 +1330,10 @@ st.markdown(f"""
 <script>
 (function() {{
   function styleNav() {{
-    // Target only the top nav row buttons (not sidebar)
     var rows = document.querySelectorAll('.gm-topnav-row [data-testid="stButton"] button');
     rows.forEach(function(b) {{
       if (b.innerText.trim() === "{_active_tab}") {{
         b.style.cssText += ';color:#e2eaf4!important;border-bottom:2px solid #38b2f0!important;';
-      }}
-    }});
-    // Style sidebar nav active item
-    var sidebtns = document.querySelectorAll('[data-testid="stSidebar"] [data-testid="stButton"] button');
-    sidebtns.forEach(function(b) {{
-      var txt = b.innerText.trim().split('  ').pop().toUpperCase();
-      if (txt === "{_active_tab}") {{
-        b.style.background = '#122040';
-        b.style.color = '#38b2f0';
-        b.style.borderColor = '#1e4070';
       }}
     }});
   }}
@@ -1222,10 +1345,11 @@ st.markdown(f"""
 
 # ── Tab content ───────────────────────────────────────────────────────────────
 _active_tab = st.session_state["active_tab"]
+active_scenario = _get("/scenario", API_URL)
 
 # ── Tab 1: Brief ──────────────────────────────────────────────────────────────
 if _active_tab == "BRIEF":
-    scenario = _get("/scenario", API_URL)
+    scenario = active_scenario
     if not scenario:
         st.markdown('<div class="gm-body" style="padding:24px 0">No active scenario. Select or create one from the sidebar.</div>', unsafe_allow_html=True)
     else:
@@ -1238,11 +1362,16 @@ if _active_tab == "BRIEF":
             threat_chip = '<span class="chip chip-green">NOMINAL</span>'
 
         # Mission header
+        active_sid = _na(scenario.get("id"), "unknown")
+        mission_name = "Operational Scenario"
         st.markdown(f"""
         <div class="gm-mission-header">
             <div>
                 <div class="gm-mission-eyebrow">Mission Brief</div>
-                <div class="gm-mission-title">{_na(scenario.get('name'))}</div>
+                <div class="gm-mission-title">{mission_name}</div>
+                <div style="margin-top:8px">
+                    <span class="chip chip-white">ACTIVE SCENARIO: {active_sid}</span>
+                </div>
             </div>
             <div class="gm-mission-metric">
                 <span class="gm-mission-metric-label">Threat Level</span>
@@ -1252,10 +1381,10 @@ if _active_tab == "BRIEF":
         """, unsafe_allow_html=True)
 
         # Situation summary — featured card
-        # Prefer the fused intelligence summary because it is query-specific and
-        # changes as users launch new scenarios.
+        # Always show the scenario brief first so user-authored launch text
+        # is preserved exactly instead of being replaced by fused intel copy.
         primary_summary = _na(
-            scenario.get("scenario_summary") or scenario.get("brief"),
+            scenario.get("user_brief") or scenario.get("brief") or scenario.get("scenario_summary"),
             "No scenario summary available.",
         )
         _card("Scenario Summary", f'<div class="gm-body">{primary_summary}</div>', featured=True)
@@ -1416,7 +1545,13 @@ if _active_tab == "BRIEF":
 
         # ── Live Intel expander (Live / Historical / Terrain) ─────────────────
         with st.expander("🛰  Live Intel — GDELT · LiveUAMap · UCDP · GTD · OpenTopography", expanded=False):
-            _default_region = scenario.get("name") or scenario.get("query") or ""
+            _default_region = (
+                scenario.get("scenario_query")
+                or scenario.get("user_brief")
+                or scenario.get("name")
+                or scenario.get("query")
+                or ""
+            )
             _intel_region = st.text_input(
                 "Region (free text — e.g. 'Ukraine', 'Taiwan Strait', 'Sahel')",
                 value=_default_region,
@@ -1544,9 +1679,118 @@ if _active_tab == "BRIEF":
                         unsafe_allow_html=True,
                     )
 
+        # ── Operation Result (inline in Brief) ────────────────────────────────
+        lr = st.session_state.get("last_result")
+        if lr and lr.get("scenario_id") == scenario.get("id"):
+            _p   = lr["parsed"]
+            _adj = lr["adjudication"]
+            _red = lr["red"]
+            _sum = format_result_move_summary(_p, _adj, _red)
+
+            st.markdown(
+                '<hr style="margin:28px 0 20px 0;border-color:#1a2d44">',
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                '<div class="gm-section-label" style="margin-bottom:14px;color:#38b2f0">'
+                'Mission Brief Results</div>',
+                unsafe_allow_html=True,
+            )
+
+            # Result header banner
+            st.markdown(f"""
+            <div class="gm-mission-header" style="margin-bottom:18px">
+                <div>
+                    <div class="gm-mission-eyebrow">Turn {lr['turn_id']} — Executed Move</div>
+                    <div class="gm-mission-title">
+                        <span class="gm-value">{_sum['action']}</span>
+                        <span style="color:#3a5a7a;margin:0 10px;font-size:0.9rem">→</span>
+                        <span class="gm-value">{_sum['target']}</span>
+                    </div>
+                </div>
+                <div class="gm-mission-meta">
+                    <div class="gm-mission-metric">
+                        <span class="gm-mission-metric-label">Outcome</span>
+                        {_sum['success_chip']}
+                    </div>
+                    <div class="gm-mission-metric">
+                        <span class="gm-mission-metric-label">Detection Risk</span>
+                        {_sum['detect_chip']}
+                    </div>
+                    <div class="gm-mission-metric">
+                        <span class="gm-mission-metric-label">Attribution Risk</span>
+                        {_sum['attr_chip']}
+                    </div>
+                    <div class="gm-mission-metric">
+                        <span class="gm-mission-metric-label">Red Response</span>
+                        {_sum['esc_chip']}
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Three-column: move · outcome · red cell
+            _rc1, _rc2, _rc3 = st.columns(3)
+
+            with _rc1:
+                _move_html = format_parsed_move(_p)
+                _card("Blue Move Details", _move_html)
+                _assumptions = _p.get("assumptions", [])
+                if _assumptions:
+                    with st.expander("Analyst Assumptions"):
+                        st.markdown(_bullet_list([_na(a) for a in _assumptions]), unsafe_allow_html=True)
+
+            with _rc2:
+                _adj_html = format_adjudication(_adj)
+                _card("Outcome Assessment", _adj_html)
+                with st.expander("Assessment Rationale"):
+                    st.markdown(
+                        f'<div class="gm-body">{_na(_adj.get("rationale"))}</div>',
+                        unsafe_allow_html=True,
+                    )
+
+            with _rc3:
+                _red_html = format_red_response(_red)
+                _card("Red Cell Response", _red_html, featured=True)
+                with st.expander("Red Team Rationale"):
+                    st.markdown(
+                        f'<div class="gm-body">{_na(_red.get("rationale"))}</div>',
+                        unsafe_allow_html=True,
+                    )
+
+            # AAR — full-width below the three columns
+            _aar = lr.get("aar") or {}
+            _aar_text = format_aar(_aar)
+            if _aar_text:
+                st.markdown('<div style="margin-top:18px"></div>', unsafe_allow_html=True)
+                _aar_cites = _aar.get("citations") or []
+                _cite_block = ""
+                if _aar_cites:
+                    _cite_block = _inline_collapsible(
+                        f"📚 Doctrine references ({len(_aar_cites)})",
+                        "".join(
+                            f'<div style="padding:6px 0;border-bottom:1px solid #161e2a;font-size:0.79rem">'
+                            f'<strong style="color:#6a9ab8">{_na(c.get("source"))}</strong>'
+                            f' <span style="color:#3e5060">·</span>'
+                            f' <span style="color:#6a8aa0">{_na(c.get("text",""))[:200]}…</span></div>'
+                            for c in _aar_cites[:5]
+                        ),
+                    )
+                _card(
+                    "After-Action Review",
+                    f'<div class="gm-body" style="line-height:1.8">{_aar_text}</div>{_cite_block}',
+                    featured=True,
+                )
+
+            # Doctrine refs from result (if separate from AAR)
+            _result_cites = (_aar.get("citations") or [])
+            if not _result_cites:
+                _result_cites = (lr.get("aar") or {}).get("citations") or []
+
 
 # ── Tab 2: Move ───────────────────────────────────────────────────────────────
 elif _active_tab == "MOVE":
+    scenario = active_scenario or {}
     st.markdown('<div class="gm-section-label" style="margin-bottom:8px">Submit Blue Move</div>', unsafe_allow_html=True)
     st.markdown('<div class="gm-body" style="margin-bottom:14px">Describe your cyber defensive action in plain English. The engine will parse, adjudicate, and generate a Red counter-move.</div>', unsafe_allow_html=True)
 
@@ -1567,7 +1811,7 @@ elif _active_tab == "MOVE":
                 st.session_state["last_result"] = result
                 st.success(f"Turn {result['turn_id']} recorded — switch to Result or AAR.")
 
-    if st.session_state["last_result"]:
+    if st.session_state["last_result"] and st.session_state["last_result"].get("scenario_id") == scenario.get("id"):
         lr = st.session_state["last_result"]
         p   = lr["parsed"]
         adj = lr["adjudication"]
@@ -1584,8 +1828,9 @@ elif _active_tab == "MOVE":
 
 # ── Tab 3: Result ─────────────────────────────────────────────────────────────
 elif _active_tab == "RESULT":
+    scenario = active_scenario or {}
     lr = st.session_state["last_result"]
-    if not lr:
+    if not lr or lr.get("scenario_id") != scenario.get("id"):
         st.markdown('<div class="gm-body" style="padding:24px 0">Submit a Blue move to see results.</div>', unsafe_allow_html=True)
     else:
         p   = lr["parsed"]
@@ -1666,8 +1911,9 @@ elif _active_tab == "RESULT":
 
 # ── Tab 4: AAR ────────────────────────────────────────────────────────────────
 elif _active_tab == "AAR":
+    scenario = active_scenario or {}
     lr = st.session_state["last_result"]
-    if not lr or not lr.get("aar"):
+    if not lr or lr.get("scenario_id") != scenario.get("id") or not lr.get("aar"):
         st.markdown('<div class="gm-body" style="padding:24px 0">Submit a Blue move to generate the After-Action Review.</div>', unsafe_allow_html=True)
     else:
         aar = lr["aar"]
@@ -1704,8 +1950,9 @@ elif _active_tab == "AAR":
 
 # ── Tab 5: Timeline ───────────────────────────────────────────────────────────
 elif _active_tab == "TIMELINE":
+    scenario = active_scenario or {}
     st.markdown('<div class="gm-section-label" style="margin-bottom:14px">Operational Turn Log</div>', unsafe_allow_html=True)
-    history: Optional[List[Dict[str, Any]]] = _get("/history", API_URL)
+    history: Optional[List[Dict[str, Any]]] = _get(f"/history?scenario_id={scenario.get('id','')}", API_URL)
 
     if not history:
         st.markdown('<div class="gm-body" style="padding:24px 0">No turns yet. Submit a Blue move to start.</div>', unsafe_allow_html=True)

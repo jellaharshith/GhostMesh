@@ -65,6 +65,7 @@ class RedMove(BaseModel):
 class TurnResponse(BaseModel):
     turn_id: int
     ts: str
+    scenario_id: str
     blue_move: str
     parsed: ParsedMove
     adjudication: Adjudication
@@ -114,6 +115,8 @@ class Scenario(BaseModel):
     id: str
     name: str
     brief: str
+    user_brief: str = ""
+    scenario_query: str = ""
     blue_objectives: List[str]
     red_posture: str
     assets: List[ScenarioAsset]

@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend import db, scenario as scenario_mod
@@ -90,6 +90,23 @@ def select_scenario(body: SelectRequest):
     return sc
 
 
+@app.post("/scenarios/refresh", response_model=Scenario, summary="Re-enrich active scenario with latest live intel")
+def refresh_scenario():
+    """Force re-fetch of GDELT/OSM/UCDP intel for the current active scenario."""
+    sc = scenario_seeder.get_scenario()
+    if not sc:
+        raise HTTPException(status_code=404, detail="No active scenario")
+    # Force re-enrichment by temporarily clearing intel fields so _enrich_canned runs
+    sc_bare = {k: v for k, v in sc.items() if k not in ("tension_score", "recent_events")}
+    import threading
+    with scenario_seeder._lock:
+        scenario_seeder._active = sc_bare
+    refreshed = scenario_seeder.select(sc_bare["id"])
+    if not refreshed:
+        return sc
+    return refreshed
+
+
 @app.post("/scenarios/create", response_model=Scenario, summary="Create and set custom scenario")
 def create_scenario(body: CreateScenarioRequest):
     import json
@@ -97,6 +114,8 @@ def create_scenario(body: CreateScenarioRequest):
 
     scenario_dict = body.dict()
     scenario_dict["sources_used"] = ["custom"]
+    scenario_dict["user_brief"] = body.brief
+    scenario_dict["scenario_query"] = body.brief
 
     canned_dir = Path(__file__).parent.parent / "scenarios" / "canned"
     canned_dir.mkdir(parents=True, exist_ok=True)
@@ -206,6 +225,8 @@ def parse_and_run_scenario(body: ParseTextRequest):
         "id": sc_id,
         "name": name,
         "brief": text,
+        "user_brief": text,
+        "scenario_query": text,
         "blue_objectives": objectives,
         "red_posture": red_posture,
         "assets": assets,
@@ -267,6 +288,7 @@ def submit_turn(req: TurnRequest) -> Dict[str, Any]:
     return {
         "turn_id": turn_id,
         "ts": ts,
+        "scenario_id": sc["id"],
         "blue_move": req.blue_move,
         "parsed": parsed_dict,
         "adjudication": adjudication_dict,
@@ -276,8 +298,14 @@ def submit_turn(req: TurnRequest) -> Dict[str, Any]:
 
 
 @app.get("/history", summary="Turn history")
-def get_history() -> List[Dict[str, Any]]:
-    return db.list_turns()
+def get_history(scenario_id: str | None = Query(default=None)) -> List[Dict[str, Any]]:
+    turns = db.list_turns()
+    if scenario_id:
+        return [t for t in turns if t.get("scenario_id") == scenario_id]
+    # default: scope to active scenario to avoid cross-scenario mismatch in UI
+    sc = scenario_mod.get_scenario()
+    sid = sc.get("id")
+    return [t for t in turns if t.get("scenario_id") == sid]
 
 
 @app.get("/aar/{turn_id}", response_model=AARResponse, summary="Fetch AAR for a turn")
