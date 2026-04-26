@@ -75,7 +75,7 @@ def main(rebuild: bool = False) -> None:
     except Exception:
         existing_ids = set()
 
-    md_files = sorted(CORPUS_DIR.glob("*.md"))
+    md_files = sorted(CORPUS_DIR.rglob("*.md"))
     if not md_files:
         print(f"No markdown files found in {CORPUS_DIR}")
         return

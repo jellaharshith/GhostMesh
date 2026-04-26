@@ -1,0 +1,90 @@
+[
+  {
+    "data_id": "1001",
+    "event_date": "2024-04-12",
+    "country": "Taiwan",
+    "admin1": "Taipei",
+    "event_type": "Strategic developments",
+    "sub_event_type": "Change to group activity",
+    "actor1": "PRC Military Forces",
+    "actor2": "Taiwan Armed Forces",
+    "notes": "PRC naval exercises in Taiwan Strait with simulated blockade maneuvers, elevating regional tension indicators. Multiple US carrier group repositioning observed."
+  },
+  {
+    "data_id": "1002",
+    "event_date": "2024-04-08",
+    "country": "Ukraine",
+    "admin1": "Kharkiv",
+    "event_type": "Explosions/Remote violence",
+    "sub_event_type": "Shelling/artillery/missile attack",
+    "actor1": "Russian Armed Forces",
+    "actor2": "Ukrainian Armed Forces",
+    "notes": "Missile strikes targeted power substation infrastructure in northeastern Ukraine, resulting in grid disruptions affecting 300,000 residents."
+  },
+  {
+    "data_id": "1003",
+    "event_date": "2024-04-05",
+    "country": "United States",
+    "admin1": "Texas",
+    "event_type": "Strategic developments",
+    "sub_event_type": "Looting/property destruction",
+    "actor1": "Unknown cyber actor",
+    "actor2": "US Energy Sector",
+    "notes": "Suspected state-sponsored intrusion detected in Texas power grid SCADA historian; CISA issued advisory. Attribution pending."
+  },
+  {
+    "data_id": "1004",
+    "event_date": "2024-04-01",
+    "country": "Iran",
+    "admin1": "Tehran",
+    "event_type": "Strategic developments",
+    "sub_event_type": "Change to group activity",
+    "actor1": "IRGC Cyber Command",
+    "actor2": "US Critical Infrastructure",
+    "notes": "IRGC-affiliated group CyberAv3ngers claimed operations against US water utility ICS/SCADA systems as retaliation for regional policy."
+  },
+  {
+    "data_id": "1005",
+    "event_date": "2024-03-28",
+    "country": "South Korea",
+    "admin1": "Seoul",
+    "event_type": "Strategic developments",
+    "sub_event_type": "Non-violent transfer of territory",
+    "actor1": "DPRK Lazarus Group",
+    "actor2": "South Korean Financial Infrastructure",
+    "notes": "Lazarus Group spearphishing campaign targeting South Korean financial institutions and critical infrastructure operators identified by KISA."
+  },
+  {
+    "data_id": "1006",
+    "event_date": "2024-03-22",
+    "country": "Germany",
+    "admin1": "Bavaria",
+    "event_type": "Strategic developments",
+    "sub_event_type": "Looting/property destruction",
+    "actor1": "GRU-affiliated APT",
+    "actor2": "European Telecom Infrastructure",
+    "notes": "Sandworm-linked group compromised BGP routing infrastructure at major German internet exchange point; traffic manipulation detected and isolated."
+  },
+  {
+    "data_id": "1007",
+    "event_date": "2024-03-18",
+    "country": "United States",
+    "admin1": "Florida",
+    "event_type": "Strategic developments",
+    "sub_event_type": "Change to group activity",
+    "actor1": "Unknown state actor",
+    "actor2": "US Water Utility",
+    "notes": "Water treatment plant in Florida detected unauthorized access to chemical dosing HMI. Incident contained; no impact to treatment operations."
+  },
+  {
+    "data_id": "1008",
+    "event_date": "2024-03-15",
+    "country": "United Kingdom",
+    "admin1": "London",
+    "event_type": "Protests",
+    "sub_event_type": "Peaceful protest",
+    "actor1": "Environmental activists",
+    "actor2": "UK energy sector",
+    "notes": "Large-scale protests at UK energy infrastructure sites following government energy policy announcement. No physical damage reported."
+  }
+]

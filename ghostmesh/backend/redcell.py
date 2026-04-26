@@ -709,6 +709,37 @@ def generate_red_response(
         f"Tier={tier} → {escalation_label}.{doctrine_note}"
     )
 
+    # JCS doctrine-shaped posture note (best-effort, never raises)
+    jcs_note = ""
+    try:
+        from retrieval.service import retrieve as _retrieve
+        jcs_snips = _retrieve(
+            f"{posture} posture {action} response doctrine",
+            k=1,
+            tags=["jcs", "doctrine"],
+        )
+        if jcs_snips:
+            jcs_note = f" | JCS: {jcs_snips[0]['text'][:120]}"
+    except Exception:
+        pass
+
+    # CSIS strategic escalation framing (best-effort, never raises)
+    csis_note = ""
+    try:
+        from retrieval.service import retrieve as _retrieve2
+        csis_snips = _retrieve2(
+            f"{action} escalation {tier} adversary",
+            k=1,
+            tags=["csis", "escalation"],
+        )
+        if csis_snips:
+            csis_note = f" | CSIS: {csis_snips[0]['text'][:120]}"
+    except Exception:
+        pass
+
+    if jcs_note or csis_note:
+        rationale = rationale + jcs_note + csis_note
+
     result = {
         "red_action":       response["red_action"],
         "target":           response["target"],

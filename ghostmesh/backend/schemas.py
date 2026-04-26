@@ -10,6 +10,24 @@ class RetrievalSnippet(BaseModel):
     score: float = 0.0
 
 
+class EventModel(BaseModel):
+    event_id: str
+    source: str                          # gdelt | acled | local
+    timestamp: str
+    location: str
+    actors: List[str] = []
+    event_type: str
+    summary: str
+    tension_weight: float = 0.0
+    infrastructure_relevance: List[str] = []
+
+
+class ActorRelationship(BaseModel):
+    actor_a: str
+    actor_b: str
+    posture: str  # hostile | tension | cooperative
+
+
 class TurnRequest(BaseModel):
     blue_move: str
 
@@ -99,11 +117,18 @@ class Scenario(BaseModel):
     blue_objectives: List[str]
     red_posture: str
     assets: List[ScenarioAsset]
+    # Public-source grounding fields — optional, default-empty for canned scenario back-compat
+    tension_level: float = 0.0
+    actor_relationships: List[ActorRelationship] = []
+    recent_events: List[EventModel] = []
+    sources_used: List[str] = []
 
 
 class SeedRequest(BaseModel):
     query: str
     use_api: bool = True
+    use_acled: bool = True
+    country: Optional[str] = None
 
 
 class SelectRequest(BaseModel):
