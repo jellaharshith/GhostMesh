@@ -1,0 +1,40 @@
+{
+  "id": "custom-47285de6",
+  "name": "A Volt Typhoon\u2013style state-sponsored actor has established stealthy access insid",
+  "brief": "A Volt Typhoon\u2013style state-sponsored actor has established stealthy access inside a Western power grid substation through compromised contractor VPN credentials. The adversary has remained dormant while mapping the network and identifying critical control systems. No disruption has occurred yet, but intelligence suggests the actor is preparing to manipulate load-balancing systems during a period of geopolitical tension, potentially causing localized outages without triggering immediate detection",
+  "blue_objectives": [
+    "Identify and revoke compromised contractor credentials",
+    "Protect OT/ICS systems from adversary lateral movement",
+    "Prevent operational disruption and restore normal operations",
+    "Attribute adversary activity and coordinate with authorities"
+  ],
+  "red_posture": "PRC Volt Typhoon-class LOTL actor. Uses native Windows tools, compromised contractor credentials. Stealth priority: stay below detection threshold. Escalation: hold and expand footprint.",
+  "assets": [
+    {
+      "name": "VPN-GATEWAY",
+      "type": "VPN Access Gateway",
+      "status": "compromised"
+    },
+    {
+      "name": "CONTRACTOR-VPN",
+      "type": "Contractor VPN",
+      "status": "compromised"
+    },
+    {
+      "name": "SUBSTATION-RTU",
+      "type": "Substation RTU",
+      "status": "at-risk"
+    },
+    {
+      "name": "GRID-CONTROL",
+      "type": "Power Grid Control",
+      "status": "at-risk"
+    }
+  ],
+  "tension_level": 7.5,
+  "actor_relationships": [],
+  "recent_events": [],
+  "sources_used": [
+    "custom"
+  ]
+}

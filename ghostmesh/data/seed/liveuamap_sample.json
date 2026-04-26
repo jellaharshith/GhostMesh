@@ -1,0 +1,272 @@
+[
+  {
+    "id": "lum-001",
+    "title": "Russian missile strike on Ukrainian power substation",
+    "description": "Three Kh-101 cruise missiles impact 330kV substation near Kharkiv, knocking out grid for ~120,000 customers. Ukrainian air defense reports two interceptions.",
+    "date": "2025-12-15 04:30:00",
+    "country": "Ukraine",
+    "place": "Kharkiv Oblast",
+    "icon": "missile"
+  },
+  {
+    "id": "lum-002",
+    "title": "Drone swarm targets Ukrainian energy infrastructure overnight",
+    "description": "Shahed-136 drones strike thermal power plant in Dnipro region; substation fires reported. Ukrainian forces claim 18 of 24 drones intercepted.",
+    "date": "2025-12-14 23:10:00",
+    "country": "Ukraine",
+    "place": "Dnipropetrovsk Oblast",
+    "icon": "drone"
+  },
+  {
+    "id": "lum-003",
+    "title": "Artillery duel along eastern front near Avdiivka",
+    "description": "Sustained Russian artillery fire on Ukrainian positions. Counter-battery radar engagements reported through the night.",
+    "date": "2025-12-14 18:45:00",
+    "country": "Ukraine",
+    "place": "Donetsk Oblast",
+    "icon": "artillery"
+  },
+  {
+    "id": "lum-004",
+    "title": "Israeli airstrikes on suspected Hezbollah weapons depot",
+    "description": "IDF conducts precision strikes on three sites in southern Lebanon. Hezbollah confirms the loss of two operatives.",
+    "date": "2025-12-14 02:15:00",
+    "country": "Lebanon",
+    "place": "Tyre District",
+    "icon": "fire"
+  },
+  {
+    "id": "lum-005",
+    "title": "Houthi anti-ship missile launched at commercial vessel",
+    "description": "Greek-flagged tanker reports near miss in Bab-el-Mandeb strait; CENTCOM AEGIS destroyer engages incoming threat.",
+    "date": "2025-12-13 12:30:00",
+    "country": "Yemen",
+    "place": "Red Sea",
+    "icon": "missile"
+  },
+  {
+    "id": "lum-006",
+    "title": "Cyber intrusion at Ukrainian energy SOC",
+    "description": "CERT-UA reports active spear-phishing campaign attributed to Sandworm-class actor targeting energy operators.",
+    "date": "2025-12-12 09:00:00",
+    "country": "Ukraine",
+    "place": "Kyiv",
+    "icon": "cyber"
+  },
+  {
+    "id": "lum-007",
+    "title": "PRC naval flotilla transits Taiwan Strait centerline",
+    "description": "Five PLAN vessels including Type 055 destroyer cross median line; Taiwan dispatches frigate to monitor.",
+    "date": "2025-12-12 06:00:00",
+    "country": "Taiwan",
+    "place": "Taiwan Strait",
+    "icon": "ship"
+  },
+  {
+    "id": "lum-008",
+    "title": "Hamas rocket barrage from northern Gaza",
+    "description": "Approximately 30 rockets launched toward Sderot and Ashkelon; Iron Dome intercepts the majority.",
+    "date": "2025-12-11 19:45:00",
+    "country": "Israel",
+    "place": "Southern District",
+    "icon": "missile"
+  },
+  {
+    "id": "lum-009",
+    "title": "Iranian-built drone shot down over northern Iraq",
+    "description": "US Patriot battery engages Shahed-class drone targeting Erbil airbase. No casualties reported.",
+    "date": "2025-12-11 14:20:00",
+    "country": "Iraq",
+    "place": "Erbil",
+    "icon": "drone"
+  },
+  {
+    "id": "lum-010",
+    "title": "Russian Black Sea Fleet repositions amphibious assets",
+    "description": "OSINT analysts track movement of Ropucha-class LSTs from Sevastopol; possible amphibious exercise.",
+    "date": "2025-12-10 11:00:00",
+    "country": "Russia",
+    "place": "Sevastopol",
+    "icon": "ship"
+  },
+  {
+    "id": "lum-011",
+    "title": "Ukrainian special forces strike fuel depot in Crimea",
+    "description": "GUR claims responsibility for explosion at Russian military fuel storage facility; satellite imagery confirms damage.",
+    "date": "2025-12-10 03:45:00",
+    "country": "Ukraine",
+    "place": "Crimea",
+    "icon": "explosion"
+  },
+  {
+    "id": "lum-012",
+    "title": "NATO patrol intercepts Russian Tu-95 near Norwegian airspace",
+    "description": "RAF Typhoons and Norwegian F-35s scramble to escort Russian strategic bombers over Barents Sea.",
+    "date": "2025-12-09 22:30:00",
+    "country": "Norway",
+    "place": "Finnmark",
+    "icon": "fight"
+  },
+  {
+    "id": "lum-013",
+    "title": "Drone strike on Russian oil refinery deep inside Voronezh Oblast",
+    "description": "Long-range Ukrainian drones impact Novovoronezh refinery, causing fire visible from 30km. Output disrupted.",
+    "date": "2025-12-09 02:00:00",
+    "country": "Russia",
+    "place": "Voronezh Oblast",
+    "icon": "drone"
+  },
+  {
+    "id": "lum-014",
+    "title": "Mass protest in Tbilisi over EU accession freeze",
+    "description": "Several thousand demonstrators gather at parliament; police deploy water cannon and tear gas.",
+    "date": "2025-12-08 17:00:00",
+    "country": "Georgia",
+    "place": "Tbilisi",
+    "icon": "protest"
+  },
+  {
+    "id": "lum-015",
+    "title": "Suspected sabotage on undersea telecom cable in Baltic",
+    "description": "Two cables connecting Sweden and Lithuania severed; investigation underway. Chinese-flagged vessel reported in vicinity.",
+    "date": "2025-12-08 04:00:00",
+    "country": "Sweden",
+    "place": "Baltic Sea",
+    "icon": "cable"
+  },
+  {
+    "id": "lum-016",
+    "title": "Wagner-affiliated forces clash with Mali army patrol",
+    "description": "Ambush near Gao kills four Malian soldiers; Tuareg rebels claim responsibility.",
+    "date": "2025-12-07 14:15:00",
+    "country": "Mali",
+    "place": "Gao Region",
+    "icon": "fight"
+  },
+  {
+    "id": "lum-017",
+    "title": "DPRK launches ballistic missile into Sea of Japan",
+    "description": "Short-range ballistic missile travels approximately 450km. South Korea and Japan condemn launch.",
+    "date": "2025-12-07 06:30:00",
+    "country": "North Korea",
+    "place": "Pyongan Province",
+    "icon": "missile"
+  },
+  {
+    "id": "lum-018",
+    "title": "Russian glide bomb strike on Ukrainian frontline brigade HQ",
+    "description": "FAB-1500 with UMPK kit hits brigade command post near Kupyansk; multiple casualties reported.",
+    "date": "2025-12-06 21:00:00",
+    "country": "Ukraine",
+    "place": "Kharkiv Oblast",
+    "icon": "bomb"
+  },
+  {
+    "id": "lum-019",
+    "title": "ISIS-K claims attack on Afghan ministry building",
+    "description": "Suicide bomber detonates outside Ministry of Refugees in Kabul; Taliban security responds.",
+    "date": "2025-12-06 11:00:00",
+    "country": "Afghanistan",
+    "place": "Kabul",
+    "icon": "explosion"
+  },
+  {
+    "id": "lum-020",
+    "title": "Russian forces consolidate gains around Vovchansk",
+    "description": "Ground footage confirms Russian advance into northern Vovchansk; Ukrainian forces reposition.",
+    "date": "2025-12-05 16:45:00",
+    "country": "Ukraine",
+    "place": "Kharkiv Oblast",
+    "icon": "tank"
+  },
+  {
+    "id": "lum-021",
+    "title": "Israeli airstrike on Damascus suburb",
+    "description": "IDF strikes targeting IRGC logistics node; Syrian air defense reportedly engages with limited effect.",
+    "date": "2025-12-05 02:30:00",
+    "country": "Syria",
+    "place": "Damascus",
+    "icon": "fire"
+  },
+  {
+    "id": "lum-022",
+    "title": "Suspected Iranian cyber actor targets Israeli water utility",
+    "description": "CyberAv3ngers-class group probes ICS devices at water treatment plant; defenders isolate exposed PLCs.",
+    "date": "2025-12-04 13:30:00",
+    "country": "Israel",
+    "place": "Haifa",
+    "icon": "cyber"
+  },
+  {
+    "id": "lum-023",
+    "title": "Coalition airstrike on Houthi missile launch site",
+    "description": "F/A-18s from CSG Eisenhower destroy two missile launchers near Hodeidah; no friendly losses.",
+    "date": "2025-12-04 00:15:00",
+    "country": "Yemen",
+    "place": "Hodeidah",
+    "icon": "fire"
+  },
+  {
+    "id": "lum-024",
+    "title": "Ukrainian counter-battery fire silences Russian artillery",
+    "description": "HIMARS strike on Russian battery near Kreminna; secondary explosions observed.",
+    "date": "2025-12-03 19:00:00",
+    "country": "Ukraine",
+    "place": "Luhansk Oblast",
+    "icon": "artillery"
+  },
+  {
+    "id": "lum-025",
+    "title": "PRC coast guard vessels block Philippine resupply mission",
+    "description": "PCG cutters water-cannon Philippine boats near Second Thomas Shoal; collision damage reported.",
+    "date": "2025-12-03 09:30:00",
+    "country": "Philippines",
+    "place": "Second Thomas Shoal",
+    "icon": "ship"
+  },
+  {
+    "id": "lum-026",
+    "title": "Suspected sabotage on Polish-Lithuanian rail line",
+    "description": "Track damage discovered near border; Polish counterintelligence opens investigation citing GRU activity.",
+    "date": "2025-12-02 22:00:00",
+    "country": "Poland",
+    "place": "Suwalki",
+    "icon": "explosion"
+  },
+  {
+    "id": "lum-027",
+    "title": "Hezbollah rocket fire on northern Israel kibbutz",
+    "description": "Burkan heavy rocket strikes structure in Kiryat Shmona; two civilians wounded.",
+    "date": "2025-12-02 15:30:00",
+    "country": "Israel",
+    "place": "Kiryat Shmona",
+    "icon": "missile"
+  },
+  {
+    "id": "lum-028",
+    "title": "Suspected Russian cyber actor breaches Polish logistics provider",
+    "description": "Sandworm-class TTPs detected; CERT.PL coordinates incident response with NATO CCDCOE.",
+    "date": "2025-12-01 12:00:00",
+    "country": "Poland",
+    "place": "Warsaw",
+    "icon": "cyber"
+  },
+  {
+    "id": "lum-029",
+    "title": "Russian Iskander-M strike on Ukrainian airfield",
+    "description": "Ballistic missile impacts Mykolaiv-area airfield; one Su-27 reportedly damaged on the ground.",
+    "date": "2025-11-30 04:00:00",
+    "country": "Ukraine",
+    "place": "Mykolaiv Oblast",
+    "icon": "missile"
+  },
+  {
+    "id": "lum-030",
+    "title": "Diplomatic summit in Brussels on extended NATO eastern flank posture",
+    "description": "NATO defense ministers convene to finalize air-defense reinforcement package for Poland and Romania.",
+    "date": "2025-11-29 10:00:00",
+    "country": "Belgium",
+    "place": "Brussels",
+    "icon": "summit"
+  }
+]

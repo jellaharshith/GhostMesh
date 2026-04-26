@@ -62,13 +62,16 @@ def list_scenarios():
     return canned + extra
 
 
-@app.post("/scenarios/seed", response_model=Scenario, summary="Seed a scenario from GDELT/ACLED or use canned")
+@app.post(
+    "/scenarios/seed",
+    response_model=Scenario,
+    summary="Seed a scenario from live OSINT (GDELT + LiveUAMap + UCDP + GTD + OSM + OpenTopography) or use canned",
+)
 def seed_scenario(body: SeedRequest):
     if body.use_api:
         sc = scenario_seeder.seed_from_api(
             body.query,
             timeout_s=4.0,
-            use_acled=body.use_acled,
             country=body.country,
         )
         # Ensure the newly seeded scenario is set as active
@@ -302,3 +305,124 @@ def regenerate_aar(turn_id: int) -> Dict[str, Any]:
 def reset() -> Dict[str, str]:
     db.reset_turns()
     return {"status": "ok", "message": "Turn history cleared"}
+
+
+# ---------------------------------------------------------------------------
+# Live intel endpoints (Live Datasets Integration v2)
+# ---------------------------------------------------------------------------
+
+def _event_to_dict(ev) -> Dict[str, Any]:
+    return ev.to_dict() if hasattr(ev, "to_dict") else {
+        "event_id":                 getattr(ev, "event_id", ""),
+        "source":                   getattr(ev, "source", ""),
+        "timestamp":                getattr(ev, "timestamp", ""),
+        "location":                 getattr(ev, "location", ""),
+        "actors":                   getattr(ev, "actors", []),
+        "event_type":               getattr(ev, "event_type", ""),
+        "summary":                  getattr(ev, "summary", ""),
+        "tension_weight":           getattr(ev, "tension_weight", 0.0),
+        "infrastructure_relevance": getattr(ev, "infrastructure_relevance", []),
+    }
+
+
+@app.get("/events/live", summary="Merged live event feed (GDELT + LiveUAMap + UCDP)")
+def events_live(
+    region: str | None = None,
+    hours: int = 24,
+    limit: int = 30,
+) -> Dict[str, Any]:
+    """Return a tension-weighted merged feed of recent events.
+
+    Sources are pulled in parallel where possible; each one fails closed
+    (empty list) so the endpoint never raises.
+    """
+    query = region or "global"
+    events: List[Any] = []
+
+    try:
+        from sources import gdelt_adapter
+        events.extend(gdelt_adapter.fetch(query, timeout_s=4.0))
+    except Exception:
+        pass
+
+    try:
+        from sources import liveuamap_adapter, overpass_adapter
+        bbox = overpass_adapter.bbox_for_region(region) if region else None
+        events.extend(liveuamap_adapter.fetch(bbox=bbox, query=query, timeout_s=4.0))
+    except Exception:
+        pass
+
+    try:
+        from sources import ucdp_adapter
+        events.extend(ucdp_adapter.fetch(query=query, country=region, timeout_s=3.0))
+    except Exception:
+        pass
+
+    # De-dup by event_id, sort by tension_weight desc
+    seen: set = set()
+    unique = []
+    for ev in events:
+        if ev.event_id in seen:
+            continue
+        seen.add(ev.event_id)
+        unique.append(ev)
+    unique.sort(key=lambda e: getattr(e, "tension_weight", 0.0) or 0.0, reverse=True)
+
+    return {
+        "region":  region,
+        "hours":   hours,
+        "count":   len(unique[:limit]),
+        "events":  [_event_to_dict(ev) for ev in unique[:limit]],
+    }
+
+
+@app.get("/history/gtd", summary="Historical baseline from Global Terrorism Database")
+def history_gtd(
+    region: str | None = None,
+    start_year: int | None = None,
+    end_year: int | None = None,
+    limit: int = 20,
+) -> Dict[str, Any]:
+    """Return GTD records filtered by region and year range.
+
+    Falls back to the bundled ~2K-row sample if the optional HuggingFace
+    mirror pull is disabled or fails.
+    """
+    try:
+        from sources import gtd_adapter
+        events = gtd_adapter.fetch(
+            region=region,
+            start_year=start_year,
+            end_year=end_year,
+            limit=limit,
+        )
+    except Exception:
+        events = []
+
+    return {
+        "region":     region,
+        "start_year": start_year,
+        "end_year":   end_year,
+        "count":      len(events),
+        "events":     [_event_to_dict(ev) for ev in events],
+    }
+
+
+@app.get("/terrain", summary="OpenTopography SRTM terrain summary")
+def terrain(region: str | None = None, bbox: str | None = None) -> Dict[str, Any]:
+    """Return min/max/mean elevation and terrain class for a region or bbox.
+
+    Live API used when ``OPENTOPO_API_KEY`` is set; otherwise served from
+    the bundled elevation seed.
+    """
+    try:
+        from sources import opentopography_adapter
+        summary = opentopography_adapter.summarize(region=region, bbox=bbox)
+    except Exception:
+        summary = {}
+
+    return {
+        "region":  region,
+        "bbox":    bbox,
+        "summary": summary,
+    }

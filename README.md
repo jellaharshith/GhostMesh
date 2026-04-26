@@ -12,11 +12,13 @@ Built for the SCSP Hackathon. Designed for operators, analysts, and wargame desi
 Scenario query (plain English)
          │
          ▼
-┌─────────────────────────────────────────────────────────┐
-│                  Intelligence Fusion                     │
-│  GDELT (news/tension) · ACLED (conflict) · UCDP (wars)  │
-│  Overpass/OSM (infrastructure) · Chroma (JP 3-12 docs)  │
-└─────────────────────────┬───────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                      Intelligence Fusion                          │
+│  GDELT (news/tension) · LiveUAMap (live conflict markers)         │
+│  UCDP (wars) · GTD (historical baseline)                          │
+│  Overpass/OSM (infrastructure) · OpenTopography (SRTM terrain)    │
+│  Chroma (JCS JP 1-0/3-0/3-12/3-13/3-28/5-0 + CSIS + MITRE)        │
+└──────────────────────────────┬───────────────────────────────────┘
                            │ FusedScenario
                            ▼
 ┌──────────┐   ┌──────────────┐   ┌──────────────────────────┐
@@ -47,37 +49,41 @@ Scenario query (plain English)
 
 ### Module map
 
-| Module          | File                          | Purpose                                             |
-| --------------- | ----------------------------- | --------------------------------------------------- |
-| Parser          | `backend/parser.py`           | NL → structured intent (keyword, no LLM)            |
-| Adjudicator     | `backend/adjudicator.py`      | Probabilistic outcome + doctrine note               |
-| Red Cell        | `backend/redcell.py`          | Adaptive adversary state machine                    |
-| AAR             | `backend/aar.py`              | Deterministic debrief + JP 3-12 / CSIS citations    |
-| Retrieval       | `retrieval/service.py`        | Chroma semantic / TF-IDF fallback                   |
-| Scenario Seeder | `scenarios/seeder.py`         | OSINT fusion: GDELT + ACLED + UCDP + OSM            |
-| Mapping         | `scenarios/mapping.py`        | Events → FusedScenario with scores + doctrine notes |
-| GDELT           | `sources/gdelt_adapter.py`    | Live news tension signals                           |
-| ACLED           | `sources/acled_adapter.py`    | Conflict events (seed fallback)                     |
-| UCDP            | `sources/ucdp_adapter.py`     | Armed conflict history (UCDP GED API / seed)        |
-| Overpass        | `sources/overpass_adapter.py` | OSM infrastructure (bbox from region text)          |
-| DB              | `backend/db.py`               | SQLite turns, AARs, scenarios                       |
-| API             | `backend/main.py`             | FastAPI REST                                        |
-| UI              | `frontend/app.py`             | Streamlit tabbed interface                          |
+| Module          | File                                | Purpose                                                       |
+| --------------- | ----------------------------------- | ------------------------------------------------------------- |
+| Parser          | `backend/parser.py`                 | NL → structured intent (keyword, no LLM)                      |
+| Adjudicator     | `backend/adjudicator.py`            | Probabilistic outcome + doctrine note                         |
+| Red Cell        | `backend/redcell.py`                | Adaptive adversary state machine (LLM polish optional)        |
+| AAR             | `backend/aar.py`                    | Deterministic debrief + JCS / CSIS / MITRE citations          |
+| Retrieval       | `retrieval/service.py`              | Chroma semantic / TF-IDF fallback                             |
+| Scenario Seeder | `scenarios/seeder.py`               | OSINT fusion: GDELT + LiveUAMap + UCDP + GTD + OSM + terrain  |
+| Mapping         | `scenarios/mapping.py`              | Events → FusedScenario with scores + doctrine notes           |
+| GDELT           | `sources/gdelt_adapter.py`          | Live news tension signals                                     |
+| LiveUAMap       | `sources/liveuamap_adapter.py`      | Live conflict markers (24h disk cache + seed)                 |
+| UCDP            | `sources/ucdp_adapter.py`           | Armed conflict history (UCDP GED API / seed)                  |
+| GTD             | `sources/gtd_adapter.py`            | Global Terrorism DB historical baseline (~2K-row sample + HF) |
+| Overpass        | `sources/overpass_adapter.py`       | OSM infrastructure (bbox from region text)                    |
+| OpenTopography  | `sources/opentopography_adapter.py` | SRTM elevation summary (live with key, seed fallback)         |
+| DB              | `backend/db.py`                     | SQLite turns, AARs, scenarios                                 |
+| API             | `backend/main.py`                   | FastAPI REST (+ /events/live, /history/gtd, /terrain)         |
+| UI              | `frontend/app.py`                   | Streamlit tabbed interface (+ Live Intel panel)               |
 
 ---
 
 ## Datasets & APIs
 
-| Source                        | Usage                                           | Auth         |
-| ----------------------------- | ----------------------------------------------- | ------------ |
-| **GDELT Doc 2.0**             | Live news → tension signals, actor extraction   | None         |
-| **ACLED**                     | Conflict events schema (seed fallback included) | Optional key |
-| **UCDP GED v24.1**            | Armed conflict history, intensity scoring       | None         |
-| **Overpass / OSM**            | Critical infrastructure by geographic bbox      | None         |
-| **JP 3-12 / JP 5-0 / JP 3-0** | Joint doctrine corpus in Chroma vector store    | None (local) |
-| **CSIS Analysis Library**     | Strategic framing for AAR citations             | None (local) |
-| **MITRE ATT&CK for ICS**      | Technique corpus (T0801–T0867)                  | None (local) |
-| **CISA Advisories**           | Volt Typhoon / APT profiles                     | None (local) |
+| Source                                        | Usage                                                  | Auth                  |
+| --------------------------------------------- | ------------------------------------------------------ | --------------------- |
+| **GDELT Doc 2.0**                             | Live news → tension signals, actor extraction          | None                  |
+| **LiveUAMap**                                 | Live conflict markers, 24h disk cache + seed           | None                  |
+| **UCDP GED v24.1**                            | Armed conflict history, intensity scoring              | None                  |
+| **Global Terrorism Database**                 | Historical baseline, ~2K-row stratified sample bundled | None (HF mirror opt-in) |
+| **Overpass / OSM**                            | Critical infrastructure by geographic bbox             | None                  |
+| **OpenTopography (SRTM DEMs)**                | Terrain summary (min/mean/max elevation, class)        | Optional key          |
+| **JCS JP 1-0 / 3-0 / 3-12 / 3-13 / 3-28 / 5-0** | Joint doctrine corpus in Chroma vector store           | None (local)          |
+| **CSIS Analysis Library**                     | Strategic framing for AAR citations                    | None (local)          |
+| **MITRE ATT&CK for ICS**                      | Technique corpus (T0801–T0867)                         | None (local)          |
+| **CISA Advisories**                           | Volt Typhoon / APT profiles                            | None (local)          |
 
 All sources have local seed fallbacks — the engine never blocks on unavailable APIs.
 
@@ -116,22 +122,52 @@ streamlit run frontend/app.py
 - UI: http://localhost:8501
 - API docs: http://localhost:8029/docs
 
+### Configuration (optional)
+
+Copy the example environment file and only set what you need:
+
+```bash
+cd ghostmesh
+cp .env.example .env
+# Edit .env — never commit the real file (it is gitignored)
+```
+
+| Variable            | Required | Purpose |
+| ------------------- | -------- | ------- |
+| `ANTHROPIC_API_KEY` | No       | Enables LLM-assisted move parsing, Red Cell polish, and richer AAR when the key is set. Without it, deterministic paths still run. |
+| `OPENTOPO_API_KEY`  | No       | Live SRTM terrain from OpenTopography. Without it, seeded `data/seed/elevation_seed.json` is used for known regions. |
+| `GTD_USE_HF=1`      | No       | One-shot pull from a public HuggingFace GTD mirror; default is the bundled `data/seed/gtd_sample.csv`. |
+
+The `anthropic` package is listed in `requirements.txt` for optional LLM features.
+
 ### Using the UI
 
 1. In the sidebar, type a scenario query under **"New Scenario"** — e.g. `Volt Typhoon Texas power grid`
-2. Click **⚡ Launch Scenario** — the engine fuses GDELT + ACLED + UCDP + OSM + doctrine (~10-15s)
+2. Click **⚡ Launch Scenario** — the engine fuses GDELT + LiveUAMap + UCDP + GTD + OSM + OpenTopography + doctrine (~10-15s)
 3. The **Brief** tab shows: Tension Score, Conflict Score, Infrastructure at Risk, Doctrine Notes, Strategic Assessment
-4. Switch to **Move** and describe a Blue Team defensive action in plain English
-5. Hit **Execute Move** — get adjudication, Red Cell response, and AAR with JP 3-12 citations
+4. Open the **Live Intel** expander on the Operations tab to see live events, GTD historical baseline, and terrain context
+5. Switch to **Move** and describe a Blue Team defensive action in plain English
+6. Hit **Execute Move** — get adjudication, Red Cell response, and AAR with JCS / CSIS doctrine citations
 
 ### Smoke test (curl)
 
 ```bash
-# Seed a live scenario
+# Seed a live scenario (GDELT + LiveUAMap + UCDP + GTD + OSM + OpenTopography)
 curl -s -X POST http://localhost:8029/scenarios/seed \
   -H 'content-type: application/json' \
-  -d '{"query":"Volt Typhoon Texas power grid","use_api":true,"use_acled":true}' \
+  -d '{"query":"Volt Typhoon Texas power grid","use_api":true}' \
   | python3 -m json.tool
+
+# Live merged event feed for a region
+curl 'http://localhost:8029/events/live?region=Ukraine&hours=24&limit=20' \
+  | python3 -m json.tool
+
+# Historical baseline from GTD
+curl 'http://localhost:8029/history/gtd?region=Iran&start_year=2010&end_year=2020&limit=20' \
+  | python3 -m json.tool
+
+# Terrain summary (min/mean/max elevation, terrain class)
+curl 'http://localhost:8029/terrain?region=Taiwan%20Strait' | python3 -m json.tool
 
 # Submit a Blue move
 curl -s -X POST http://localhost:8029/turn \
@@ -162,8 +198,10 @@ Every seeded scenario carries a full intelligence picture:
   "doctrine_notes": ["JP 3-12: Persistent engagement preferred...", "..."],
   "strategic_notes": ["CSIS: PRC pre-positioning signals...", "..."],
   "infrastructure": [{"type": "power_substation", "criticality": "high", ...}],
+  "historical_baseline": [{"year": 2014, "location": "Donetsk", "summary": "..."}],
+  "terrain": {"min_elev_m": 80, "mean_elev_m": 210, "max_elev_m": 540, "terrain_class": "lowland"},
   "recommended_red_posture": "aggressive",
-  "sources_used": ["gdelt", "acled", "ucdp"]
+  "sources_used": ["gdelt", "liveuamap", "ucdp", "gtd"]
 }
 ```
 
@@ -195,27 +233,32 @@ ghostmesh/
 │   ├── adjudicator.py   Probabilistic outcome + doctrine note
 │   ├── redcell.py       State-machine adversary engine
 │   ├── aar.py           AAR + JP 3-12 / CSIS retrieval citations
-│   └── schemas.py       Pydantic models (shared contracts)
+│   ├── schemas.py       Pydantic models (shared contracts)
+│   └── tests/           Pytest (parser / schema cases; LLM paths monkey-patched)
 ├── retrieval/
 │   ├── ingest.py        Corpus → Chroma (CLI, idempotent)
 │   ├── service.py       retrieve() — Chroma primary, TF-IDF fallback
 │   ├── fallback.py      Pure-python TF-IDF (no deps)
 │   └── corpus/          Markdown files: MITRE, APT, defense, JCS doctrine, CSIS
 ├── scenarios/
-│   ├── seeder.py        OSINT fusion pipeline (GDELT + ACLED + UCDP + OSM)
+│   ├── seeder.py        OSINT fusion (GDELT + LiveUAMap + UCDP + GTD + OSM + OpenTopography)
 │   ├── mapping.py       Events → FusedScenario (scores, doctrine, summary)
 │   └── canned/          Pre-built scenario JSONs
 ├── sources/
-│   ├── gdelt_adapter.py   GDELT Doc 2.0 client
-│   ├── acled_adapter.py   ACLED conflict events (seed fallback)
-│   ├── ucdp_adapter.py    UCDP GED armed conflict history
-│   └── overpass_adapter.py  OSM infrastructure + bbox_for_region()
+│   ├── gdelt_adapter.py           GDELT Doc 2.0 client
+│   ├── liveuamap_adapter.py       LiveUAMap conflict markers (24h cache + seed)
+│   ├── ucdp_adapter.py            UCDP GED armed conflict history
+│   ├── gtd_adapter.py             Global Terrorism DB (bundled CSV + optional HF)
+│   ├── overpass_adapter.py        OSM infrastructure + bbox_for_region()
+│   └── opentopography_adapter.py  SRTM elevation summary (live + seed)
 ├── data/
 │   └── seed/
-│       ├── osm_sample.json      Critical infrastructure fallback
-│       ├── ucdp_sample.json     Armed conflict history fallback
-│       ├── acled_sample.json    Conflict events fallback
-│       └── doctrine/            JP 3-12 excerpts for retrieval
+│       ├── osm_sample.json        Critical infrastructure fallback
+│       ├── ucdp_sample.json       Armed conflict history fallback
+│       ├── liveuamap_sample.json  Live conflict markers fallback
+│       ├── gtd_sample.csv         ~2K-row stratified GTD sample
+│       ├── elevation_seed.json    Per-region SRTM elevation summaries
+│       └── doctrine/              JCS / CSIS / MITRE excerpts for retrieval
 ├── frontend/
 │   └── app.py           Streamlit (tabs: Brief / Move / Result / AAR / Timeline)
 ├── docs/
@@ -223,6 +266,17 @@ ghostmesh/
 │   ├── JUDGE_TALKING_POINTS.md
 │   └── ARCHITECTURE.md
 └── requirements.txt
+```
+
+---
+
+## Development
+
+From `ghostmesh/` with the virtualenv active:
+
+```bash
+pip install pytest
+python -m pytest backend/tests/ -q
 ```
 
 ---
@@ -235,9 +289,15 @@ ghostmesh/
 
 **UCDP API unavailable** — falls back to `data/seed/ucdp_sample.json` (5 real armed conflicts).
 
+**LiveUAMap API unavailable** — falls back to `data/seed/liveuamap_sample.json` (~30 normalized recent markers).
+
 **OSM / Overpass timeout** — falls back to `data/seed/osm_sample.json` (US critical infrastructure).
 
-**Port collision** — change `--port 8029` and update `api_url` in `frontend/app.py` line 996.
+**OpenTopography key unset** — `/terrain` and the seeded `terrain` block read from `data/seed/elevation_seed.json` (precomputed for ~12 theaters). Set `OPENTOPO_API_KEY` for live SRTM queries.
+
+**GTD HuggingFace mirror disabled** — by default the bundled `data/seed/gtd_sample.csv` (~2K rows, stratified by region/year) is used. Set `GTD_USE_HF=1` to opt in to a one-shot mirror pull.
+
+**Port collision** — change `--port 8029` and update `API_URL` in `frontend/app.py` (search for `API_URL = `, default `http://localhost:8029`).
 
 **`chromadb` not installed** — TF-IDF fallback activates automatically. Retrieval still works.
 

@@ -1,0 +1,40 @@
+{
+  "_doc": "Precomputed elevation summaries for the regions in overpass_adapter._REGION_BBOX. Used as fallback when OPENTOPO_API_KEY is unset. Values are realistic SRTM-derived approximations and are intentionally rough.",
+  "united states":      {"min_elev_m":   -85, "max_elev_m": 4421, "mean_elev_m": 760,  "terrain_class": "mixed"},
+  "us":                 {"min_elev_m":   -85, "max_elev_m": 4421, "mean_elev_m": 760,  "terrain_class": "mixed"},
+  "usa":                {"min_elev_m":   -85, "max_elev_m": 4421, "mean_elev_m": 760,  "terrain_class": "mixed"},
+  "northeast us":       {"min_elev_m":     0, "max_elev_m": 1917, "mean_elev_m": 240,  "terrain_class": "hill"},
+  "mid-atlantic":       {"min_elev_m":     0, "max_elev_m": 1746, "mean_elev_m": 180,  "terrain_class": "lowland"},
+  "east coast":         {"min_elev_m":     0, "max_elev_m": 2037, "mean_elev_m": 150,  "terrain_class": "coastal"},
+  "texas":              {"min_elev_m":     0, "max_elev_m": 2667, "mean_elev_m": 520,  "terrain_class": "lowland"},
+  "gulf coast":         {"min_elev_m":     0, "max_elev_m":  100, "mean_elev_m":  20,  "terrain_class": "coastal"},
+  "dc":                 {"min_elev_m":     0, "max_elev_m":  125, "mean_elev_m":  45,  "terrain_class": "urban"},
+  "washington dc":      {"min_elev_m":     0, "max_elev_m":  125, "mean_elev_m":  45,  "terrain_class": "urban"},
+
+  "europe":             {"min_elev_m":   -10, "max_elev_m": 4810, "mean_elev_m": 380,  "terrain_class": "mixed"},
+  "eastern europe":     {"min_elev_m":     0, "max_elev_m": 2655, "mean_elev_m": 230,  "terrain_class": "lowland"},
+  "ukraine":            {"min_elev_m":     0, "max_elev_m": 2061, "mean_elev_m": 175,  "terrain_class": "lowland"},
+  "poland":             {"min_elev_m":     0, "max_elev_m": 2499, "mean_elev_m": 173,  "terrain_class": "lowland"},
+  "baltic":             {"min_elev_m":     0, "max_elev_m":  318, "mean_elev_m":  92,  "terrain_class": "coastal"},
+  "germany":            {"min_elev_m":    -3, "max_elev_m": 2962, "mean_elev_m": 263,  "terrain_class": "hill"},
+  "nato eastern flank": {"min_elev_m":     0, "max_elev_m": 2655, "mean_elev_m": 240,  "terrain_class": "mixed"},
+
+  "taiwan":             {"min_elev_m":     0, "max_elev_m": 3952, "mean_elev_m": 730,  "terrain_class": "mountain"},
+  "taiwan strait":      {"min_elev_m":     0, "max_elev_m": 3952, "mean_elev_m": 280,  "terrain_class": "coastal"},
+  "south china sea":    {"min_elev_m":     0, "max_elev_m":  600, "mean_elev_m":  50,  "terrain_class": "coastal"},
+  "korea":              {"min_elev_m":     0, "max_elev_m": 1947, "mean_elev_m": 282,  "terrain_class": "hill"},
+  "south korea":        {"min_elev_m":     0, "max_elev_m": 1947, "mean_elev_m": 282,  "terrain_class": "hill"},
+  "japan":              {"min_elev_m":     0, "max_elev_m": 3776, "mean_elev_m": 438,  "terrain_class": "mountain"},
+  "indo-pacific":       {"min_elev_m":     0, "max_elev_m": 4884, "mean_elev_m": 380,  "terrain_class": "mixed"},
+
+  "middle east":        {"min_elev_m":  -430, "max_elev_m": 5610, "mean_elev_m": 760,  "terrain_class": "mixed"},
+  "iran":               {"min_elev_m":   -28, "max_elev_m": 5610, "mean_elev_m": 1305, "terrain_class": "mountain"},
+  "gulf":               {"min_elev_m":     0, "max_elev_m":  500, "mean_elev_m":  35,  "terrain_class": "coastal"},
+  "persian gulf":       {"min_elev_m":     0, "max_elev_m":  500, "mean_elev_m":  35,  "terrain_class": "coastal"},
+  "israel":             {"min_elev_m":  -430, "max_elev_m": 1208, "mean_elev_m": 312,  "terrain_class": "hill"},
+
+  "africa":             {"min_elev_m":  -155, "max_elev_m": 5895, "mean_elev_m": 656,  "terrain_class": "mixed"},
+  "sahel":              {"min_elev_m":   100, "max_elev_m": 1800, "mean_elev_m": 350,  "terrain_class": "lowland"},
+
+  "global":             {"min_elev_m":  -430, "max_elev_m": 8848, "mean_elev_m": 840,  "terrain_class": "mixed"}
+}

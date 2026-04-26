@@ -116,29 +116,46 @@ def select(scenario_id: str) -> Optional[Dict[str, Any]]:
 def seed_from_api(
     query: str,
     timeout_s: float = 4.0,
-    use_acled: bool = True,
     country: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
-    Seed scenario from GDELT + ACLED. Falls back to canned on any failure.
+    Seed scenario from a fused live + historical + geospatial feed.
 
-    Layers:
-    1. GDELT events (cache-backed)
-    2. ACLED events (cache-backed; optional if use_acled=True)
-    3. Tension score + actor relationships from events
-    4. mapping.articles_to_scenario extended with event context
+    Layers (each one cache-backed and silent on failure):
+      - GDELT 2.1 (live news events)
+      - LiveUAMap (live conflict markers)
+      - UCDP GED (recent armed-conflict baseline)
+      - GTD (historical decade-baseline, attached as ``historical_baseline``)
+      - Overpass / OSM (high-criticality infrastructure)
+      - OpenTopography SRTM (terrain summary, attached as ``terrain``)
     """
     global _active
     try:
         from . import mapping
-        from sources import gdelt_adapter, acled_adapter, tension as tension_mod
+        from sources import gdelt_adapter, tension as tension_mod
 
         gdelt_events = gdelt_adapter.fetch(query, timeout_s=timeout_s)
-        acled_events: list = []
-        if use_acled:
-            acled_events = acled_adapter.fetch(query, country=country, timeout_s=timeout_s)
 
-        # UCDP conflict history — always available via seed, enriches conflict_score
+        # LiveUAMap — primary live conflict marker source
+        try:
+            from sources import liveuamap_adapter
+            region_hint = f"{query} {country or ''}".strip()
+            lum_bbox = None
+            try:
+                from sources import overpass_adapter as _ov
+                lum_bbox = _ov.bbox_for_region(region_hint) if region_hint else None
+            except Exception:
+                lum_bbox = None
+            liveua_events = liveuamap_adapter.fetch(
+                bbox=lum_bbox,
+                query=query,
+                timeout_s=timeout_s,
+            )
+        except Exception as exc:
+            logger.debug("LiveUAMap fetch failed: %s", exc)
+            liveua_events = []
+
+        # UCDP conflict history — enriches conflict_score
         try:
             from sources import ucdp_adapter
             ucdp_events = ucdp_adapter.fetch(query=query, country=country, timeout_s=3.0)
@@ -146,7 +163,7 @@ def seed_from_api(
             logger.debug("UCDP fetch failed: %s", exc)
             ucdp_events = []
 
-        all_events = gdelt_events + acled_events + ucdp_events
+        all_events = gdelt_events + liveua_events + ucdp_events
         # De-dup by event_id
         seen_ids: set = set()
         unique_events = []
@@ -158,9 +175,9 @@ def seed_from_api(
         tension_level, actor_rels = tension_mod.score(unique_events)
 
         # OSM/Overpass infrastructure context — bbox derived from query/country
+        bbox: Optional[str] = None
         try:
             from sources import overpass_adapter
-            # Map query + country text to a geographic bounding box
             region_hint = f"{query} {country or ''}".strip()
             bbox = overpass_adapter.bbox_for_region(region_hint)
             if bbox:
@@ -171,6 +188,26 @@ def seed_from_api(
         except Exception as exc:
             logger.debug("Overpass fetch failed: %s", exc)
             infra_records = []
+
+        # GTD historical baseline — recent decade in the same theater
+        try:
+            from sources import gtd_adapter
+            historical_baseline = gtd_adapter.recent_decade(
+                region=(country or query), limit=20
+            )
+        except Exception as exc:
+            logger.debug("GTD fetch failed: %s", exc)
+            historical_baseline = []
+
+        # OpenTopography SRTM terrain summary
+        try:
+            from sources import opentopography_adapter
+            terrain = opentopography_adapter.summarize(
+                region=(country or query), bbox=bbox
+            )
+        except Exception as exc:
+            logger.debug("OpenTopography fetch failed: %s", exc)
+            terrain = {}
 
         # Build raw article list for mapping (GDELT shape — backward compat)
         articles = [
@@ -189,13 +226,33 @@ def seed_from_api(
         if sc is None:
             raise ValueError("empty event list")
 
+        # Attach the new enrichment blocks
+        if historical_baseline:
+            sc["historical_baseline"] = [
+                {
+                    "event_id":   ev.event_id,
+                    "timestamp":  ev.timestamp,
+                    "location":   ev.location,
+                    "actors":     ev.actors,
+                    "event_type": ev.event_type,
+                    "summary":    ev.summary,
+                }
+                for ev in historical_baseline
+            ]
+        if terrain:
+            sc["terrain"] = terrain
+
         sources_used = []
         if gdelt_events:
             sources_used.append("gdelt")
-        if acled_events:
-            sources_used.append("acled")
+        if liveua_events:
+            sources_used.append("liveuamap")
         if ucdp_events:
             sources_used.append("ucdp")
+        if historical_baseline:
+            sources_used.append("gtd")
+        if terrain:
+            sources_used.append("opentopography")
         sc["sources_used"] = sources_used
 
         try:

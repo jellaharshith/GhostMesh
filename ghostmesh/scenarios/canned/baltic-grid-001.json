@@ -41,8 +41,8 @@
       "infrastructure_relevance": ["grid", "critical-infrastructure"]
     },
     {
-      "event_id": "acled-baltic-001",
-      "source": "acled",
+      "event_id": "ucdp-baltic-001",
+      "source": "ucdp",
       "timestamp": "20260423T090000Z",
       "location": "Baltic Region",
       "actors": ["Protest movements", "Energy sector workers"],
@@ -63,5 +63,5 @@
       "infrastructure_relevance": ["grid", "substation"]
     }
   ],
-  "sources_used": ["gdelt", "acled"]
+  "sources_used": ["gdelt", "ucdp"]
 }

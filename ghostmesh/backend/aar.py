@@ -242,9 +242,82 @@ def _render_ui_text(
 
 
 def _polish_aar(aar: Dict[str, Any]) -> Dict[str, Any]:
-    if os.getenv("GHOSTMESH_LLM_AAR", "0") != "1":
+    """
+    LLM-polished staff assessment in the voice of a Joint Staff J3 analyst.
+    Enabled when ANTHROPIC_API_KEY is set (GHOSTMESH_LLM_AAR env var ignored).
+    Adds aar["llm_debrief"] and appends a Staff Assessment section to ui_text.
+    Falls back silently — deterministic AAR is always complete on its own.
+    """
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key:
         return aar
-    return aar  # future: Anthropic SDK wording polish only
+
+    try:
+        import anthropic  # lazy import
+    except ImportError:
+        return aar
+
+    # Retrieve 1-2 doctrine citations for grounding
+    doctrine_ctx = ""
+    try:
+        from retrieval.service import retrieve
+        query = f"{aar.get('outcome_class', '')} {aar.get('scenario_id', '')} doctrine"
+        snips = retrieve(query, k=2, tags=["jcs", "doctrine", "concept"])
+        if snips:
+            doctrine_ctx = "\n".join(f"- {s['text'][:180]}" for s in snips)
+    except Exception:
+        pass
+
+    what = "\n".join(f"- {b}" for b in aar.get("what_happened", []))
+    why = "\n".join(f"- {b}" for b in aar.get("why_it_happened", [])[:3])
+    risks = "; ".join(r.get("label", "") for r in aar.get("key_risks", []))
+    nxt = aar.get("recommended_next_action", "")
+
+    system_prompt = (
+        "You are a Joint Staff J3 (Operations) analyst writing an after-action assessment "
+        "for a classified cyber wargame. Write exactly 3 short paragraphs (≤60 words each): "
+        "1) operational summary of what happened and why; "
+        "2) key risk implications for mission success; "
+        "3) recommended next action with doctrinal justification. "
+        "Use precise, professional military staff language. No markdown headers. No bullet points."
+    )
+
+    user_msg = (
+        f"EXERCISE: {aar.get('scenario_id', 'unknown')} | Turn {aar.get('turn_id', '?')}\n"
+        f"Headline: {aar.get('headline', '')}\n"
+        f"Outcome: {aar.get('outcome_class', '')}\n\n"
+        f"What happened:\n{what}\n\n"
+        f"Why it happened:\n{why}\n\n"
+        f"Key risks: {risks or 'none identified'}\n"
+        f"Recommended next move: {nxt}\n"
+    )
+    if doctrine_ctx:
+        user_msg += f"\nDoctrine context:\n{doctrine_ctx}"
+    user_msg += "\n\nWrite the 3-paragraph J3 staff assessment."
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        msg = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            system=[
+                {
+                    "type": "text",
+                    "text": system_prompt,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
+            messages=[{"role": "user", "content": user_msg}],
+        )
+        debrief = msg.content[0].text.strip() if msg.content else ""
+        if debrief and len(debrief) > 20:
+            aar = dict(aar)
+            aar["llm_debrief"] = debrief
+            aar["ui_text"] = aar.get("ui_text", "") + f"\n\n**J3 Staff Assessment**\n{debrief}"
+    except Exception:
+        pass  # deterministic AAR is unchanged
+
+    return aar
 
 
 # ── Public entry point ────────────────────────────────────────────────────────

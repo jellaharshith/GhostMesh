@@ -1,0 +1,22 @@
+{
+  "id": "custom-c733565a",
+  "name": "Energy operators have observed abnormal fluctuations in grid frequency across in",
+  "brief": "Energy operators have observed abnormal fluctuations in grid frequency across interconnected regions. While no major outage has occurred yet, the instability suggests manipulation of control signals. If left unchecked, the issue could escalate into cascading failures.",
+  "blue_objectives": [
+    "Prevent operational disruption and restore normal operations"
+  ],
+  "red_posture": "State-sponsored actor using LOTL techniques. Maintains persistence via compromised credentials. Stealth priority. Escalation: hold and monitor Blue response.",
+  "assets": [
+    {
+      "name": "ENERGY-MGMT",
+      "type": "Energy Management System",
+      "status": "at-risk"
+    }
+  ],
+  "tension_level": 5.0,
+  "actor_relationships": [],
+  "recent_events": [],
+  "sources_used": [
+    "custom"
+  ]
+}

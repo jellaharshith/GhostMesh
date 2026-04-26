@@ -649,17 +649,68 @@ def _apply_doctrine(
     return updated, hint
 
 
-# ── Optional LLM wording hook (stub) ──────────────────────────────────────────
+# ── Optional LLM wording hook ─────────────────────────────────────────────────
 
 def _polish_wording(response: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Stub for optional LLM-assisted wording refinement.
-    Set GHOSTMESH_LLM_RED=1 and implement body to enable.
-    Core tier/posture decisions are never delegated here.
+    LLM-assisted intent refinement grounded in retrieved JCS/MITRE doctrine.
+    Enabled when ANTHROPIC_API_KEY is set (GHOSTMESH_LLM_RED env var ignored).
+    Core tier/posture decisions are never delegated here — only the intent
+    narrative is enriched.  Falls back silently to deterministic result.
     """
-    if os.getenv("GHOSTMESH_LLM_RED", "0") != "1":
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key:
         return response
-    # Future: call Anthropic SDK for wording polish only.
+
+    try:
+        import anthropic  # lazy import
+    except ImportError:
+        return response
+
+    # Retrieve 2 doctrine snippets to ground the response
+    doctrine_ctx = ""
+    try:
+        from retrieval.service import retrieve
+        red_action = response.get("red_action", "")
+        rationale = response.get("rationale", "")
+        snips = retrieve(f"{red_action} adversary TTP doctrine", k=2, tags=["apt", "mitre", "jcs"])
+        if snips:
+            doctrine_ctx = "\n".join(f"- {s['text'][:160]}" for s in snips)
+    except Exception:
+        pass
+
+    system_prompt = (
+        "You are the Red Cell operator for APT-X, a sophisticated nation-state adversary. "
+        "Your task: write a single concise sentence (≤40 words) that articulates the OPERATIONAL "
+        "INTENT behind an adversary action, grounding it in the provided doctrine context. "
+        "Output ONLY the intent sentence — no preamble, no markdown, no quotation marks."
+    )
+
+    user_msg = (
+        f"Action: {response.get('red_action', '')}\n"
+        f"Target: {response.get('target', '')}\n"
+        f"Current intent: {response.get('intent', '')}\n"
+        f"Operational rationale: {response.get('rationale', '')[:300]}\n"
+    )
+    if doctrine_ctx:
+        user_msg += f"\nDoctrine context:\n{doctrine_ctx}"
+    user_msg += "\n\nRewrite the intent as a precise, doctrine-grounded operator statement."
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        msg = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=120,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_msg}],
+        )
+        refined = msg.content[0].text.strip() if msg.content else ""
+        if refined and len(refined) > 10:
+            response = dict(response)
+            response["intent"] = refined
+    except Exception:
+        pass  # deterministic result unchanged
+
     return response
 
 
