@@ -265,6 +265,19 @@ def generate_aar(
             citations = snips
     except Exception:
         pass
+    # CSIS strategic narrative enrichment (best-effort, never raises)
+    try:
+        from retrieval.service import retrieve as _retrieve_csis
+        csis_snips = _retrieve_csis(
+            f"{action} {outcome_class} strategic implications adversary",
+            k=2,
+            tags=["csis", "analysis"],
+        )
+        if csis_snips:
+            why.append(f"CSIS analysis: {csis_snips[0]['text'][:160]}")
+            citations = citations + csis_snips
+    except Exception:
+        pass
     risks    = _extract_risks(adjudication, red, history, action)
     cascades = _project_cascades(adjudication.get("cascading_effects", []))
     nxt      = _recommend_next(outcome_class, red)

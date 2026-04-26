@@ -42,7 +42,7 @@ def _load_corpus() -> List[dict]:
     if _DOCS is not None:
         return _DOCS
     docs = []
-    for path in sorted(CORPUS_DIR.glob("*.md")):
+    for path in sorted(CORPUS_DIR.rglob("*.md")):
         meta, body = _parse_frontmatter(path.read_text())
         if not body:
             continue

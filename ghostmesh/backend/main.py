@@ -62,10 +62,15 @@ def list_scenarios():
     return canned + extra
 
 
-@app.post("/scenarios/seed", response_model=Scenario, summary="Seed a scenario from news (GDELT) or use canned")
+@app.post("/scenarios/seed", response_model=Scenario, summary="Seed a scenario from GDELT/ACLED or use canned")
 def seed_scenario(body: SeedRequest):
     if body.use_api:
-        sc = scenario_seeder.seed_from_api(body.query, timeout_s=4.0)
+        sc = scenario_seeder.seed_from_api(
+            body.query,
+            timeout_s=4.0,
+            use_acled=body.use_acled,
+            country=body.country,
+        )
     else:
         sc = scenario_seeder.get_scenario()
     return sc

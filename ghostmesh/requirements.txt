@@ -4,3 +4,4 @@ pydantic==2.9.2
 streamlit==1.39.0
 requests==2.32.3
 chromadb>=0.5.0
+python-dateutil==2.9.0

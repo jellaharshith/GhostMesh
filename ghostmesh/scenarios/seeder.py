@@ -113,17 +113,64 @@ def select(scenario_id: str) -> Optional[Dict[str, Any]]:
     return sc
 
 
-def seed_from_api(query: str, timeout_s: float = 4.0) -> Dict[str, Any]:
+def seed_from_api(
+    query: str,
+    timeout_s: float = 4.0,
+    use_acled: bool = True,
+    country: Optional[str] = None,
+) -> Dict[str, Any]:
     """
-    Seed a scenario from GDELT + mapping. Falls back to canned on any failure.
+    Seed scenario from GDELT + ACLED. Falls back to canned on any failure.
+
+    Layers:
+    1. GDELT events (cache-backed)
+    2. ACLED events (cache-backed; optional if use_acled=True)
+    3. Tension score + actor relationships from events
+    4. mapping.articles_to_scenario extended with event context
     """
     try:
-        from . import gdelt, mapping
-        articles = gdelt.fetch_articles(query, timeout_s=timeout_s)
-        sc = mapping.articles_to_scenario(articles, query)
+        from . import mapping
+        from sources import gdelt_adapter, acled_adapter, tension as tension_mod
+
+        gdelt_events = gdelt_adapter.fetch(query, timeout_s=timeout_s)
+        acled_events: list = []
+        if use_acled:
+            acled_events = acled_adapter.fetch(query, country=country, timeout_s=timeout_s)
+
+        all_events = gdelt_events + acled_events
+        # De-dup by event_id
+        seen_ids: set = set()
+        unique_events = []
+        for ev in all_events:
+            if ev.event_id not in seen_ids:
+                seen_ids.add(ev.event_id)
+                unique_events.append(ev)
+
+        tension_level, actor_rels = tension_mod.score(unique_events)
+
+        # Build raw article list for mapping (GDELT shape — backward compat)
+        articles = [
+            {"title": ev.summary, "domain": ev.source, "url": ""}
+            for ev in unique_events
+        ]
+
+        sc = mapping.articles_to_scenario(
+            articles,
+            query,
+            events=unique_events,
+            tension_level=tension_level,
+            actor_relationships=actor_rels,
+        )
         if sc is None:
-            raise ValueError("empty articles")
-        # Save to DB
+            raise ValueError("empty event list")
+
+        sources_used = []
+        if gdelt_events:
+            sources_used.append("gdelt")
+        if acled_events:
+            sources_used.append("acled")
+        sc["sources_used"] = sources_used
+
         try:
             from backend import db
             db.save_scenario(sc["id"], sc["name"], sc, _utcnow())

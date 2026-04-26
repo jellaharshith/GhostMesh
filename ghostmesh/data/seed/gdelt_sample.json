@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Chinese hackers infiltrated US critical infrastructure networks, officials warn",
+    "url": "https://example-news.com/volt-typhoon-infra",
+    "domain": "example-news.com",
+    "seendate": "20240415T120000Z",
+    "sourcecountry": "United States"
+  },
+  {
+    "title": "Cyberattack targets US port terminal SCADA systems, operations disrupted",
+    "url": "https://example-news.com/port-scada-attack",
+    "domain": "example-news.com",
+    "seendate": "20240410T083000Z",
+    "sourcecountry": "United States"
+  },
+  {
+    "title": "Russian-linked hackers probe power grid substation control systems",
+    "url": "https://example-news.com/sandworm-grid-probe",
+    "domain": "example-news.com",
+    "seendate": "20240408T150000Z",
+    "sourcecountry": "Ukraine"
+  },
+  {
+    "title": "Water utility hit by ransomware; chemical dosing systems isolated as precaution",
+    "url": "https://example-news.com/water-ransomware",
+    "domain": "example-news.com",
+    "seendate": "20240405T100000Z",
+    "sourcecountry": "United States"
+  },
+  {
+    "title": "BGP route hijack attributed to state-sponsored actor disrupts ISP backbone traffic",
+    "url": "https://example-news.com/bgp-hijack-state",
+    "domain": "example-news.com",
+    "seendate": "20240401T062000Z",
+    "sourcecountry": "Germany"
+  },
+  {
+    "title": "CISA warns of Iranian hackers targeting industrial control systems at US facilities",
+    "url": "https://example-news.com/irgc-ics-warning",
+    "domain": "example-news.com",
+    "seendate": "20240328T140000Z",
+    "sourcecountry": "United States"
+  },
+  {
+    "title": "Telecom provider network management systems breached via VPN appliance vulnerability",
+    "url": "https://example-news.com/telecom-vpn-breach",
+    "domain": "example-news.com",
+    "seendate": "20240320T090000Z",
+    "sourcecountry": "United Kingdom"
+  },
+  {
+    "title": "Pipeline operator detects intrusion in SCADA historian; operations continue under monitoring",
+    "url": "https://example-news.com/pipeline-scada-intrusion",
+    "domain": "example-news.com",
+    "seendate": "20240315T180000Z",
+    "sourcecountry": "United States"
+  }
+]
