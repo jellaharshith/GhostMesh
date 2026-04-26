@@ -133,3 +133,19 @@ class SeedRequest(BaseModel):
 
 class SelectRequest(BaseModel):
     scenario_id: str
+
+
+class CreateScenarioRequest(BaseModel):
+    id: str
+    name: str
+    brief: str
+    blue_objectives: List[str]
+    red_posture: str
+    assets: List[ScenarioAsset]
+    tension_level: float = 0.0
+    actor_relationships: List[ActorRelationship] = []
+    recent_events: List[EventModel] = []
+
+
+class ParseTextRequest(BaseModel):
+    text: str

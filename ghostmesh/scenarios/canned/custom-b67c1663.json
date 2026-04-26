@@ -1,0 +1,33 @@
+{
+  "id": "custom-b67c1663",
+  "name": "Telecom providers are experiencing unexplained latency spikes and packet loss ac",
+  "brief": "Telecom providers are experiencing unexplained latency spikes and packet loss across key network routes. The disruptions are intermittent and difficult to trace, suggesting a coordinated effort to degrade communications without causing a full outage. This could impact emergency services, financial systems, and national coordination if the situation worsens.",
+  "blue_objectives": [
+    "Prevent operational disruption and restore normal operations",
+    "Attribute adversary activity and coordinate with authorities"
+  ],
+  "red_posture": "State-sponsored actor using LOTL techniques. Maintains persistence via compromised credentials. Stealth priority. Escalation: hold and monitor Blue response.",
+  "assets": [
+    {
+      "name": "PRIMARY-SYSTEM",
+      "type": "Critical Infrastructure System",
+      "status": "at-risk"
+    },
+    {
+      "name": "ACCESS-GATEWAY",
+      "type": "Access Gateway",
+      "status": "compromised"
+    },
+    {
+      "name": "MONITOR-CONSOLE",
+      "type": "Monitoring Console",
+      "status": "online"
+    }
+  ],
+  "tension_level": 5.0,
+  "actor_relationships": [],
+  "recent_events": [],
+  "sources_used": [
+    "custom"
+  ]
+}

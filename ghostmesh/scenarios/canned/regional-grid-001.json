@@ -1,0 +1,23 @@
+{
+  "id": "regional-grid-001",
+  "name": "Operation Cascade",
+  "brief": "PRC state-sponsored actor (Volt Typhoon-class) has compromised a regional power grid control system via contractor VPN credentials. Actor established persistence in the grid control network and is subtly modifying load balancing setpoint signals to create localized outages while evading SCADA threshold alerts. Blue Team must identify the compromise, locate persistence mechanisms, stop signal manipulation, and restore normal grid operations without triggering cascading failure.",
+  "blue_objectives": [
+    "Detect compromise vector in contractor VPN authentication logs",
+    "Identify and enumerate persistence mechanisms (scheduled tasks, WMI subscriptions, backdoor accounts)",
+    "Locate load balancing signal modification points in control algorithms",
+    "Isolate affected grid segments and restore normal setpoint behavior",
+    "Coordinate with grid operators to prevent cascading blackout during remediation"
+  ],
+  "red_posture": "Actor maintains access via valid contractor VPN credentials for stealth. Uses LOTL techniques (Powershell, WMI, Windows built-in tools) to avoid EDR/AV detection. Has mapped regional grid topology and load balancing algorithms. Modifying RTU setpoint signals in ~2-3% increments per cycle to stay under SCADA alert thresholds while accumulating outage effect. Escalation authority: maintain persistence and expand outage footprint without triggering automatic failover or operator manual intervention.",
+  "assets": [
+    {"name": "VPN-CONTRACTOR", "type": "Contractor VPN Gateway", "status": "compromised"},
+    {"name": "GRID-CONTROL-HQ", "type": "Regional Grid Control Center", "status": "at-risk"},
+    {"name": "LB-ALGO-SERVER", "type": "Load Balancing Algorithm Server", "status": "at-risk"},
+    {"name": "SCADA-RTU-WEST", "type": "Western Region RTU", "status": "at-risk"},
+    {"name": "SCADA-RTU-EAST", "type": "Eastern Region RTU", "status": "at-risk"},
+    {"name": "SETPOINT-HISTORIAN", "type": "Setpoint Change Historian", "status": "at-risk"},
+    {"name": "GRID-MONITOR", "type": "Grid Monitoring Console", "status": "online"},
+    {"name": "IT-OT-BOUNDARY-FW", "type": "IT/OT Firewall", "status": "online"}
+  ]
+}
