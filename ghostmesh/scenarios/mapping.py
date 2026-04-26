@@ -1,4 +1,4 @@
-"""Map GDELT articles to a normalized Scenario dict."""
+"""Map GDELT/ACLED events to a normalized Scenario dict."""
 from __future__ import annotations
 import hashlib
 from typing import Any, Dict, List, Optional, Tuple
@@ -120,12 +120,19 @@ def _first_actor(blob: str) -> Optional[str]:
 def articles_to_scenario(
     articles: List[Dict[str, Any]],
     query: str,
+    events: Optional[List[Any]] = None,
+    tension_level: float = 0.0,
+    actor_relationships: Optional[List[Dict[str, str]]] = None,
 ) -> Optional[Dict[str, Any]]:
     """
-    Project GDELT articles + query into a Scenario dict.
-    Returns None if articles list is empty.
+    Project articles/events + query into a Scenario dict.
+    Returns None if both articles and events are empty.
+
+    events: optional list of sources.schemas.Event objects (or dicts).
+    tension_level: pre-computed tension score [0..1].
+    actor_relationships: list of {actor_a, actor_b, posture} dicts.
     """
-    if not articles:
+    if not articles and not events:
         return None
 
     blob = " ".join(
@@ -133,20 +140,55 @@ def articles_to_scenario(
         for a in articles
     )
 
+    # Augment blob with event summaries for better infra/actor detection
+    if events:
+        for ev in events:
+            summary = ev.summary if hasattr(ev, "summary") else ev.get("summary", "")
+            blob += " " + summary.lower()
+
     infra_label, assets = _first_infra(blob)
-    actor = _first_actor(blob) or "Unattributed advanced persistent threat"
+
+    # Actor from events first (more specific), then blob keyword scan
+    actor = None
+    if events:
+        for ev in events:
+            ev_actors = ev.actors if hasattr(ev, "actors") else ev.get("actors", [])
+            for a in ev_actors:
+                if a and "unknown" not in a.lower():
+                    actor = a
+                    break
+            if actor:
+                break
+    actor = actor or _first_actor(blob) or "Unattributed advanced persistent threat"
 
     top_titles = [a.get("title", "") for a in articles[:3] if a.get("title")]
     brief_suffix = " ".join(f'Recent reporting: "{t}".' for t in top_titles[:2])
 
+    # Tension framing
+    tension_desc = ""
+    if tension_level >= 0.70:
+        tension_desc = "Regional tension is HIGH — geopolitical escalation indicators active. "
+    elif tension_level >= 0.40:
+        tension_desc = "Regional tension is ELEVATED based on recent OSINT. "
+
     sid = "seeded-" + hashlib.sha1((query + blob[:200]).encode()).hexdigest()[:8]
+
+    # Top 8 recent events as dicts for schema attachment
+    recent_events_dicts = []
+    if events:
+        for ev in events[:8]:
+            if hasattr(ev, "to_dict"):
+                recent_events_dicts.append(ev.to_dict())
+            elif isinstance(ev, dict):
+                recent_events_dicts.append(ev)
 
     return {
         "id": sid,
         "name": f"Operation {_codename(query)}",
         "brief": (
             f"{actor} has been observed conducting cyber operations targeting {infra_label}. "
-            f"Threat intelligence derived from recent open-source reporting. {brief_suffix} "
+            f"{tension_desc}"
+            f"Threat intelligence derived from GDELT/ACLED open-source reporting. {brief_suffix} "
             "Blue Team must assess the threat and develop a defensive response."
         ),
         "blue_objectives": [
@@ -157,8 +199,13 @@ def articles_to_scenario(
         ],
         "red_posture": (
             f"{actor} conducting reconnaissance and pre-positioning against {infra_label}. "
-            "Threat derived from OSINT — exact foothold unknown. Assume persistence capability. "
+            f"Threat derived from GDELT/ACLED OSINT — exact foothold unknown. "
+            f"Tension level: {tension_level:.2f}. Assume persistence capability. "
             "Escalation authority: disruption of primary operations."
         ),
         "assets": assets,
+        "tension_level": round(tension_level, 3),
+        "actor_relationships": actor_relationships or [],
+        "recent_events": recent_events_dicts,
+        "sources_used": [],  # filled by seeder
     }
