@@ -185,6 +185,14 @@ if submitted:
                 with st.expander("Red rationale"):
                     st.write(red["rationale"])
 
+            # ── After-Action Review ────────────────────────────────────────
+            if result.get("aar"):
+                st.divider()
+                aar = result["aar"]
+                st.markdown(aar["ui_text"])
+                with st.expander("AAR — full JSON"):
+                    st.json(aar)
+
             st.divider()
 
 # ── Turn history ──────────────────────────────────────────────────────────────
@@ -216,3 +224,10 @@ else:
                 st.json(adj)
             with h3:
                 st.json(red)
+            # Fetch and render AAR for this turn
+            try:
+                aar_r = requests.get(f"{api_url}/aar/{turn['turn_id']}", timeout=5)
+                if aar_r.ok:
+                    st.markdown(aar_r.json()["aar"]["ui_text"])
+            except Exception:
+                pass

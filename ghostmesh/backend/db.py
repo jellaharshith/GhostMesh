@@ -1,7 +1,7 @@
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 DB_PATH = Path(__file__).parent.parent / "data" / "ghostmesh.db"
 
@@ -26,6 +26,19 @@ def init_db() -> None:
                 red_json         TEXT    NOT NULL
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS aars (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                turn_id      INTEGER NOT NULL UNIQUE,
+                scenario_id  TEXT    NOT NULL,
+                generated_ts TEXT    NOT NULL,
+                aar_json     TEXT    NOT NULL,
+                ui_text      TEXT    NOT NULL
+            )
+        """)
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_aars_turn ON aars(turn_id)"
+        )
         conn.commit()
 
 
@@ -75,7 +88,43 @@ def list_turns() -> List[Dict[str, Any]]:
     return result
 
 
+def save_aar(
+    turn_id: int,
+    scenario_id: str,
+    generated_ts: str,
+    aar: Dict[str, Any],
+    ui_text: str,
+) -> int:
+    with _conn() as conn:
+        cur = conn.execute(
+            """
+            INSERT OR REPLACE INTO aars (turn_id, scenario_id, generated_ts, aar_json, ui_text)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (turn_id, scenario_id, generated_ts, json.dumps(aar), ui_text),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+def get_aar(turn_id: int) -> Optional[Dict[str, Any]]:
+    with _conn() as conn:
+        row = conn.execute(
+            "SELECT aar_json FROM aars WHERE turn_id = ?", (turn_id,)
+        ).fetchone()
+    return json.loads(row["aar_json"]) if row else None
+
+
+def list_aars() -> List[Dict[str, Any]]:
+    with _conn() as conn:
+        rows = conn.execute(
+            "SELECT aar_json FROM aars ORDER BY turn_id"
+        ).fetchall()
+    return [json.loads(r["aar_json"]) for r in rows]
+
+
 def reset_turns() -> None:
     with _conn() as conn:
+        conn.execute("DELETE FROM aars")
         conn.execute("DELETE FROM turns")
         conn.commit()
