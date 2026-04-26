@@ -1,0 +1,23 @@
+{
+  "id": "custom-54ba06a9",
+  "name": "In the Black Sea region, increasing geopolitical friction and protests near key ",
+  "brief": "In the Black Sea region, increasing geopolitical friction and protests near key ports have slowed shipping operations. At the same time, port management systems are experiencing unexplained data inconsistencies. Container tracking errors and delayed fuel shipments are creating congestion, raising concerns that a cyber actor may be manipulating logistics systems.",
+  "blue_objectives": [
+    "Protect OT/ICS systems from adversary lateral movement",
+    "Attribute adversary activity and coordinate with authorities"
+  ],
+  "red_posture": "State-sponsored actor using LOTL techniques. Maintains persistence via compromised credentials. Stealth priority. Escalation: hold and monitor Blue response.",
+  "assets": [
+    {
+      "name": "PORT-TOS",
+      "type": "Terminal Operating System",
+      "status": "at-risk"
+    }
+  ],
+  "tension_level": 2.5,
+  "actor_relationships": [],
+  "recent_events": [],
+  "sources_used": [
+    "custom"
+  ]
+}

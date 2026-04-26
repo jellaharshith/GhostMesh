@@ -1,0 +1,34 @@
+{
+  "id": "custom-499af27c",
+  "name": "Baltic Grid Crisis \u2014 State-backed actor compromises contractor VPN, SCADA system",
+  "brief": "Baltic Grid Crisis \u2014 State-backed actor compromises contractor VPN, SCADA systems targeted, high tension 7.5",
+  "blue_objectives": [
+    "Identify and revoke compromised contractor credentials",
+    "Protect OT/ICS systems from adversary lateral movement",
+    "Attribute adversary activity and coordinate with authorities"
+  ],
+  "red_posture": "State-sponsored actor using LOTL techniques. Maintains persistence via compromised credentials. Stealth priority. Escalation: hold and monitor Blue response.",
+  "assets": [
+    {
+      "name": "SCADA-CONTROL",
+      "type": "SCADA Control System",
+      "status": "at-risk"
+    },
+    {
+      "name": "VPN-GATEWAY",
+      "type": "VPN Access Gateway",
+      "status": "compromised"
+    },
+    {
+      "name": "CONTRACTOR-VPN",
+      "type": "Contractor VPN",
+      "status": "compromised"
+    }
+  ],
+  "tension_level": 7.5,
+  "actor_relationships": [],
+  "recent_events": [],
+  "sources_used": [
+    "custom"
+  ]
+}

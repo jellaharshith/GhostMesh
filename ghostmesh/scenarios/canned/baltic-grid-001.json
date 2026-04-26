@@ -1,0 +1,67 @@
+{
+  "id": "baltic-grid-001",
+  "name": "Baltic Grid Instability Crisis",
+  "brief": "State-backed cyber unit conducting hybrid warfare escalation against NATO-aligned Baltic regional energy grid. Recent geopolitical tension spike, coordinated disinformation campaigns, and suspicious contractor access anomalies indicate pre-positioning for coordinated attack. Initial indicators: minor unexplained substation outage, flagged contractor credentials (not yet revoked), and load balancing latency spikes. Blue Team must maintain grid stability, prevent cascading failures, and avoid public panic while identifying adversary intent and staying below retaliation threshold.",
+  "blue_objectives": [
+    "Maintain grid stability — no unplanned load shedding events",
+    "Prevent cascading outages across regional substations",
+    "Avoid triggering public panic or media escalation",
+    "Identify adversary intent and actor attribution",
+    "Coordinate with NATO allies for threat intelligence sharing"
+  ],
+  "red_posture": "State-backed hybrid warfare actor conducting coordinated cyber-kinetic escalation. Objectives: create localized outages to test Blue response thresholds, maintain ambiguous attribution to avoid triggering Article 5, exploit disinformation to amplify societal impact. Initial footholds: compromised contractor VPN credentials, reconnaissance of load balancing algorithms, latency injection capabilities. Escalation authority: measured — test response without triggering full defensive escalation.",
+  "assets": [
+    {"name": "CONTRACTOR-VPN", "type": "Contractor Access Gateway", "status": "compromised"},
+    {"name": "SCADA-PRIMARY", "type": "Primary SCADA Control System", "status": "at-risk"},
+    {"name": "LB-ALGORITHM-SERVER", "type": "Load Balancing Control Server", "status": "at-risk"},
+    {"name": "SUBSTATION-EAST", "type": "Eastern Regional Substation RTU", "status": "at-risk"},
+    {"name": "SUBSTATION-WEST", "type": "Western Regional Substation RTU", "status": "at-risk"},
+    {"name": "SUBSTATION-CENTRAL", "type": "Central Substation RTU", "status": "at-risk"},
+    {"name": "LB-HISTORIAN", "type": "Load Balancing Historian", "status": "at-risk"},
+    {"name": "GRID-MONITOR", "type": "Regional Grid Monitoring Console", "status": "online"},
+    {"name": "SCADA-FW", "type": "SCADA Boundary Firewall", "status": "online"},
+    {"name": "NATO-LIAISON", "type": "NATO Alert Protocol Gateway", "status": "online"}
+  ],
+  "tension_level": 7.5,
+  "actor_relationships": [
+    {"actor_a": "Baltic NATO members", "actor_b": "Regional adversary state", "posture": "hostile"},
+    {"actor_a": "Baltic energy utilities", "actor_b": "Contractor supply chain", "posture": "tension"},
+    {"actor_a": "NATO Cyber Defense Center", "actor_b": "Attribution threshold", "posture": "tension"}
+  ],
+  "recent_events": [
+    {
+      "event_id": "gdelt-baltic-001",
+      "source": "gdelt",
+      "timestamp": "20260424T140000Z",
+      "location": "Baltic Region",
+      "actors": ["State-backed cyber unit", "Hybrid warfare actor"],
+      "event_type": "cyber-incident",
+      "summary": "Coordinated disinformation campaign detected across Baltic social media targeting energy sector confidence",
+      "tension_weight": 0.7,
+      "infrastructure_relevance": ["grid", "critical-infrastructure"]
+    },
+    {
+      "event_id": "acled-baltic-001",
+      "source": "acled",
+      "timestamp": "20260423T090000Z",
+      "location": "Baltic Region",
+      "actors": ["Protest movements", "Energy sector workers"],
+      "event_type": "protest",
+      "summary": "Protests near energy facilities increase; union messaging focuses on infrastructure reliability concerns",
+      "tension_weight": 0.5,
+      "infrastructure_relevance": ["grid"]
+    },
+    {
+      "event_id": "gdelt-baltic-002",
+      "source": "gdelt",
+      "timestamp": "20260422T180000Z",
+      "location": "Baltic Substations",
+      "actors": ["Unknown actor"],
+      "event_type": "cyber-incident",
+      "summary": "Minor unexplained outage in eastern substation; load balancing latency spikes detected",
+      "tension_weight": 0.8,
+      "infrastructure_relevance": ["grid", "substation"]
+    }
+  ],
+  "sources_used": ["gdelt", "acled"]
+}
