@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
@@ -44,6 +44,38 @@ class TurnResponse(BaseModel):
     parsed: ParsedMove
     adjudication: Adjudication
     red: RedMove
+    aar: AfterAction
+
+
+class AARRisk(BaseModel):
+    label: str
+    severity: str       # low | med | high
+    rationale: str
+
+
+class AARCascade(BaseModel):
+    description: str
+    severity: str       # low | med | high
+    horizon: str        # immediate | next-turn | medium-term
+
+
+class AfterAction(BaseModel):
+    turn_id: int
+    scenario_id: str
+    headline: str
+    outcome_class: str
+    what_happened: List[str]
+    why_it_happened: List[str]
+    key_risks: List[AARRisk]
+    cascading_effects: List[AARCascade]
+    recommended_next_action: str
+    confidence: float
+    ui_text: str
+    generated_ts: str
+
+
+class AARResponse(BaseModel):
+    aar: AfterAction
 
 
 class ScenarioAsset(BaseModel):
