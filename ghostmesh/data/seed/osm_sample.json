@@ -1,0 +1,68 @@
+[
+  {
+    "id": "way/123001",
+    "type": "power_substation",
+    "name": "Metro North Substation 7",
+    "location": "Baltimore, MD",
+    "lat": 39.2904,
+    "lon": -76.6122,
+    "tags": {"power": "substation", "voltage": "115000", "operator": "BGE"},
+    "criticality": "high",
+    "risk_label": "Grid anchor — feeds 240,000 customers; single point of failure on N-1 contingency"
+  },
+  {
+    "id": "way/123002",
+    "type": "telecom_exchange",
+    "name": "Core IXP East",
+    "location": "Ashburn, VA",
+    "lat": 39.0438,
+    "lon": -77.4874,
+    "tags": {"telecom": "exchange", "internet_exchange": "yes"},
+    "criticality": "critical",
+    "risk_label": "Internet exchange — 12 Tbps peak throughput; disruption cascades to DC metro financial sector"
+  },
+  {
+    "id": "way/123003",
+    "type": "water_treatment",
+    "name": "Eastern Water Treatment Plant",
+    "location": "Philadelphia, PA",
+    "lat": 39.9526,
+    "lon": -75.1652,
+    "tags": {"man_made": "water_works", "operator": "PWD"},
+    "criticality": "high",
+    "risk_label": "Water treatment — serves 1.5M residents; SCADA historian exposed on legacy flat network"
+  },
+  {
+    "id": "way/123004",
+    "type": "fuel_depot",
+    "name": "Colonial Pipeline Breakout Station 12",
+    "location": "Linden, NJ",
+    "lat": 40.6265,
+    "lon": -74.2446,
+    "tags": {"pipeline": "fuel", "operator": "Colonial Pipeline"},
+    "criticality": "critical",
+    "risk_label": "Refined fuel — disruption triggers NE corridor supply shock within 72 hours"
+  },
+  {
+    "id": "way/123005",
+    "type": "port_terminal",
+    "name": "Port Elizabeth Container Terminal",
+    "location": "Newark, NJ",
+    "lat": 40.6895,
+    "lon": -74.1468,
+    "tags": {"port": "terminal", "operator": "PONYNJ"},
+    "criticality": "high",
+    "risk_label": "Port terminal — TOS/SCADA integration; crane PLC fleet accessible via vendor jump host"
+  },
+  {
+    "id": "way/123006",
+    "type": "power_plant",
+    "name": "Calvert Cliffs Nuclear Station",
+    "location": "Lusby, MD",
+    "lat": 38.4321,
+    "lon": -76.4404,
+    "tags": {"power": "plant", "plant:source": "nuclear", "operator": "Constellation"},
+    "criticality": "critical",
+    "risk_label": "Nuclear generation — 1,788 MW; safety system segregation; cyber incident triggers NRC notification"
+  }
+]
